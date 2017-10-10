@@ -2,6 +2,15 @@
 // https://github.com/ethereum/EIPs/issues/20
 contract ERC20Interface {
 
+    // Token symbol
+    string public constant symbol = "TBA";
+
+    // Name of token
+    string public constant name ="TBA";
+
+    // Decimals of token
+    uint8 public constant decimals = 18;
+
     // Get the total token supply
     function totalSupply() public constant returns (uint256 supply);
 
@@ -111,11 +120,6 @@ contract ERC20Token is ERC20Interface{
 
 
 contract SoulToken is ERC20Token{
-    // The symbol is SOUL as well of course
-    string public constant symbol = "SOUL";
-
-    // Name of token
-    string public constant name = "Soul Peaces";
 
     // mapping to keep the reason of the soul sale!
     mapping(address => string) public reasons;
@@ -129,9 +133,6 @@ contract SoulToken is ERC20Token{
     // number of souls owned by a someone
     mapping(address => uint256) public soulsOwned;
 
-    // memory for the last Sould put on sale for fallback function
-    address public lastSoul;
-
     // owner of the contract
     address public owner;
 
@@ -142,23 +143,26 @@ contract SoulToken is ERC20Token{
     uint public obol;
 
     // price per token
-    uint256 public tokenPrice = 1 finney / unit;
+    uint256 public tokenPrice;
 
     // this the maximum of Soul
     uint256 totalSupply_;
+
+    // Logs a soul transfer
+    event SoulTransfer(address indexed _from, address indexed _to);
 
     function SoulToken(){
         owner = msg.sender;
         charonsBoat = msg.sender;
         totalSupply_ = 0;
-        obol = 30; // 100 / 30 -> 3.3333% very trinity!
-        // you get also 1000 SoulTokens per Ether purchased
+        obol = 10; // 10%, the ecclesiastical tithe
+        // you get also 1000 Soul Peaces per Ether purchased
         tokenPrice = 1 finney / unit;
     }
 
-    // fallback function, try to buy the last sould, will fail if this was already sold Im afraid
-    function () payable {
-        buySoul(lastSoul);
+    // fallback function, taken as donation!
+    function () public payable {
+        charonsBoat.transfer(msg.value);
     }
 
 
@@ -166,59 +170,58 @@ contract SoulToken is ERC20Token{
         return totalSupply_;
     }
 
-    // changes charons boat, i.e. the address where the obol is payed to
+    // changes Charons boat, i.e. the address where the obol is payed to
     function changeBoat(address new_boat_) public{
         require(msg.sender == owner);
         charonsBoat = new_boat_;
     }
 
     // returns the reason for the selling
-    function soldHisSouldBecause(address no_soul_mate) public constant returns(string){
-        return reasons[no_soul_mate];
+    function soldHisSouldBecause(address noSoulMate) public constant returns(string){
+        return reasons[noSoulMate];
     }
 
     // returns the owner of a soul
-    function soulIsOwnedBy(address no_soul_mate) public constant returns(address){
-        return ownedBy[no_soul_mate];
+    function soulIsOwnedBy(address noSoulMate) public constant returns(address){
+        return ownedBy[noSoulMate];
     }
 
     // returns number of souls owned by someone
-    function soulsOwnedBy(address soulOwner) public constant returns(uint256){
+    function ownsSouls(address soulOwner) public constant returns(uint256){
         return soulsOwned[soulOwner];
     }
 
-    function soldHisSoulFor(address no_soul_mate) public constant returns(uint256){
-        return soulPrices[no_soul_mate];
+    function soldHisSoulFor(address noSoulMate) public constant returns(uint256){
+        return soulPrices[noSoulMate];
     }
 
     // sells your soul for a given price and a given reason!
     function sellSoul(string reason, uint256 price) public{
         string has_reason;
 
-        has_reason = reasons[msg.sender];
+        // require that user gives a reason
+        require(bytes(reason).length > 0);
+
         // assert has not sold his soul, yet
+        has_reason = reasons[msg.sender];
         require(bytes(has_reason).length == 0);
-        require(ownedBy[msg.sender] == 0);
-        // check that the reason is not too long, maximum is 12*12 super holy characters
-        require(bytes(has_reason).length <= 144);
+        require(ownedBy[msg.sender] == address(0));
         // store the reason forever on the blockchain
         reasons[msg.sender] = reason;
         // also the price is forever kept on the blockchain, so do not be too cheap
         soulPrices[msg.sender] = price;
-        // keep the lastSoul for the fallback function
-        lastSoul = msg.sender;
     }
 
     // buys msg.sender a soul and rewards him with tokens!
-    function buySoul(address no_soul_mate) public payable returns(uint amount){
+    function buySoul(address noSoulMate) public payable returns(uint amount){
         uint256 charonsObol;
         uint256 price;
         uint256 tokens;
 
         // you cannot buy an owned soul:
-        require(ownedBy[no_soul_mate] == 0);
+        require(ownedBy[noSoulMate] == address(0));
         // get the price of the soul
-        price = soulPrices[no_soul_mate];
+        price = soulPrices[noSoulMate];
         // Soul must be for sale
         require(price > 0);
         // Msg sender needs to pay the soul price
@@ -231,22 +234,45 @@ contract SoulToken is ERC20Token{
         amount = msg.value / tokenPrice;
         // check for wrap around
         require(totalSupply_ +  amount > totalSupply_);
+        require(soulsOwned[msg.sender] + 1 > soulsOwned[msg.sender]);
 
         // pay Charon
         charonsBoat.transfer(charonsObol);
         // pay the soul owner:
-        no_soul_mate.transfer(msg.value - charonsObol);
+        noSoulMate.transfer(msg.value - charonsObol);
 
         // Increase total supply by amount
         totalSupply_ += amount;
         // Increase the sender's balance by the appropriate amount and souls ;-)
         soulsOwned[msg.sender] += 1;
+        ownedBy[noSoulMate] = msg.sender;
         balances[msg.sender] += amount;
+        // log the transfers
         Transfer(this, msg.sender, amount);
+        SoulTransfer(noSoulMate, msg.sender);
 
         return amount;
     }
 
+    // can transfer a soul to a different account, but beware you have to pay Charon again!
+    function transferSoul(address _to, address noSoulMate) payable{
+        uint256 charonsObol;
+
+        charonsObol = soulPrices[noSoulMate] / obol;
+
+        require(ownedBy[noSoulMate] == msg.sender);
+        require(soulsOwned[_to] + 1 > soulsOwned[_to]);
+        require(msg.value >= charonsObol);
+        // pay Charon
+        charonsBoat.transfer(msg.value);
+        // transfer the soul
+        soulsOwned[msg.sender] -= 1;
+        soulsOwned[_to] += 1;
+        ownedBy[noSoulMate] = _to;
+
+        // Log the soul transfer
+        SoulTransfer(msg.sender, _to);
+    }
 
 
 }
