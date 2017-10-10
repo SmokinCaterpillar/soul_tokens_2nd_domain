@@ -1,0 +1,16 @@
+build
+contracts
+deployment
+tests
+website/notebooks
+downloads
+.gitignore
+populus.json
+.log
+.out
+.gz
+.tex
+.idea
+.cache
+website/img/*.xcf
+website/node_modules
