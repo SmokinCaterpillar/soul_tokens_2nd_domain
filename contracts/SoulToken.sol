@@ -139,7 +139,7 @@ contract SoulToken is ERC20Token{
     // owner of the contract
     address public owner;
 
-    // Address where sould obol is due to
+    // Address where souls obol is due to
     address public charonsBoat;
 
     // fee to pay to transfer soul
