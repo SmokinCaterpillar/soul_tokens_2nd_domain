@@ -140,7 +140,7 @@ contract SoulToken is ERC20Token{
     address public charonsBoat;
 
     // fee to pay to transfer soul
-    uint public obol;
+    uint8 public obol;
 
     // price per token
     uint256 public tokenPrice;
@@ -163,6 +163,11 @@ contract SoulToken is ERC20Token{
     // fallback function, taken as donation!
     function () public payable {
         charonsBoat.transfer(msg.value);
+    }
+
+    function changeObol(uint8 _obol) public {
+        require(msg.sender == owner);
+        obol = _obol;
     }
 
 

@@ -215,17 +215,21 @@ def test_buy_soul_errors(chain, accounts):
 
     # fails because your offer is not high enough
     with pytest.raises(TransactionFailed):
-            chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':int(0.9*finney)}).buySoul(accounts[1]))
+        chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':int(0.9*finney)}).buySoul(accounts[1]))
 
     chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':1*finney}).buySoul(accounts[1]))
 
     # fails because you cannot buy a bought soul
     with pytest.raises(TransactionFailed):
-            chain.wait.for_receipt(soul_token.transact({'from':accounts[0], 'value':1*finney}).buySoul(accounts[1]))
+        chain.wait.for_receipt(soul_token.transact({'from':accounts[0], 'value':1*finney}).buySoul(accounts[1]))
 
     # fails because sould is not for sale
     with pytest.raises(TransactionFailed):
-            chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':1*finney}).buySoul(accounts[0]))
+        chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':1*finney}).buySoul(accounts[0]))
+
+    # fails because obol can only be changed by author
+    with pytest.raises(TransactionFailed):
+        chain.wait.for_receipt(soul_token.transact({'from':accounts[1]}).changeObol(22))
 
 
 def test_transferSoul(chain, accounts):
