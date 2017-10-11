@@ -6,6 +6,7 @@ import time
 ether = int(1e18)
 finney = int(ether/1000)
 vig = 10
+booking_fee = 3*finney
 
 decimals = 7
 unit = int(1e7)
@@ -48,12 +49,24 @@ def test_sell_soul(chain, accounts):
     )
 
     reason = 'I`m bored äöÜ'
-    chain.wait.for_receipt(soul_token.transact({'from':accounts[1]}).sellSoul(reason, 100))
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 100))
 
     assert soul_token.call().soldHisSouldBecause(accounts[1]) == reason
     assert soul_token.call().soldHisSouldBecause(accounts[0]) == ''
     assert soul_token.call().soldHisSoulFor(accounts[0]) == 0
     assert soul_token.call().soldHisSoulFor(accounts[1]) == 100
+
+
+def test_sell_soul_fails_low_fee(chain, accounts):
+    provider = chain.provider
+    soul_token, deploy_txn_hash = provider.get_or_deploy_contract(
+        'SoulToken'
+    )
+
+    reason = 'I`m bored äöÜ'
+    with pytest.raises(TransactionFailed):
+        chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee - 1}).sellSoul(reason, 100))
+
 
 
 def test_twice_sell_soul_fails(chain, accounts):
@@ -63,11 +76,11 @@ def test_twice_sell_soul_fails(chain, accounts):
     )
 
     reason = 'I`m bored'
-    chain.wait.for_receipt(soul_token.transact({'from':accounts[1]}).sellSoul(reason, 1*finney))
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 1*finney))
 
     # should fail for double sale
     with pytest.raises(TransactionFailed):
-        chain.wait.for_receipt(soul_token.transact({'from':accounts[1]}).sellSoul(reason, 1*finney))
+        chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 1*finney))
 
 
 def test_buy_soul(chain, accounts):
@@ -77,7 +90,7 @@ def test_buy_soul(chain, accounts):
     )
 
     reason = 'I`m bored'
-    chain.wait.for_receipt(soul_token.transact({'from':accounts[1]}).sellSoul(reason, 1*finney))
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 1*finney))
 
     weis = get_wei(chain, accounts)
     chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':1*finney}).buySoul(accounts[1]))
@@ -100,11 +113,11 @@ def test_buy_multiple_souls(chain, accounts):
     )
 
     reason = 'I`m bored'
-    rec = chain.wait.for_receipt(soul_token.transact({'from':accounts[1]}).sellSoul(reason, 1*finney))
+    rec = chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 1*finney))
 
     chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':1*finney}).buySoul(accounts[1]))
 
-    chain.wait.for_receipt(soul_token.transact({'from':accounts[3]}).sellSoul(reason, 2*finney))
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[3], 'value':booking_fee}).sellSoul(reason, 2*finney))
 
     chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':2*finney}).buySoul(accounts[3]))
 
@@ -124,7 +137,7 @@ def test_buy_soulmore(chain, accounts):
     )
 
     reason = 'I`m bored'
-    chain.wait.for_receipt(soul_token.transact({'from':accounts[1]}).sellSoul(reason, 1*finney))
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 1*finney))
 
     weis = get_wei(chain, accounts)
     chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':2*finney}).buySoul(accounts[1]))
@@ -134,7 +147,7 @@ def test_buy_soulmore(chain, accounts):
     assert soul_token.call().soulIsOwnedBy(accounts[2]) == null_address
     assert soul_token.call().ownsSouls(accounts[2]) == 1
     assert soul_token.call().ownsSouls(accounts[1]) == 0
-    assert soul_token.call().balanceOf(accounts[2]) == 2*unit
+    assert soul_token.call().balanceOf(accounts[2]) == 1*unit
     assert soul_token.call().balanceOf(accounts[0]) == 0
     assert weis[1] < new_weis[1]
     assert weis[2] > new_weis[2]
@@ -149,10 +162,10 @@ def test_superlong_reason(chain, accounts):
     reason = 'a' * 99999
     # should fail because of gas limit
     with pytest.raises(InvalidTransaction):
-        chain.wait.for_receipt(soul_token.transact({'from':accounts[1]}).sellSoul(reason, 1*finney))
+        chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 1*finney))
 
     reason = 'a' * 999
-    receipt = chain.wait.for_receipt(soul_token.transact({'from':accounts[1]}).sellSoul(reason, 1*finney))
+    receipt = chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 1*finney))
     assert receipt.gasUsed > 500000
 
 
@@ -175,8 +188,13 @@ def test_vig(chain, accounts):
     )
 
     reason = 'I`m bored'
-    chain.wait.for_receipt(soul_token.transact({'from':accounts[1]}).sellSoul(reason, 1*finney))
     chain.wait.for_receipt(soul_token.transact({'from':accounts[0]}).changeBoat(accounts[3]))
+
+    weis = get_wei(chain, accounts)
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 1*finney))
+    new_weis = get_wei(chain, accounts)
+
+    assert weis[3] + booking_fee == new_weis[3]
 
     weis = get_wei(chain, accounts)
     val = 2*finney
@@ -188,7 +206,7 @@ def test_vig(chain, accounts):
     assert soul_token.call().soulIsOwnedBy(accounts[2]) == null_address
     assert soul_token.call().ownsSouls(accounts[2]) == 1
     assert soul_token.call().ownsSouls(accounts[1]) == 0
-    assert soul_token.call().balanceOf(accounts[2]) == 2*unit
+    assert soul_token.call().balanceOf(accounts[2]) == 1*unit
     assert soul_token.call().balanceOf(accounts[0]) == 0
     assert weis[1] + 2*finney - obol == new_weis[1]
     assert weis[2] > new_weis[2]
@@ -211,7 +229,7 @@ def test_buy_soul_errors(chain, accounts):
     )
 
     reason = 'I`m bored'
-    chain.wait.for_receipt(soul_token.transact({'from':accounts[1]}).sellSoul(reason, 1*finney))
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 1*finney))
 
     # fails because your offer is not high enough
     with pytest.raises(TransactionFailed):
@@ -231,6 +249,10 @@ def test_buy_soul_errors(chain, accounts):
     with pytest.raises(TransactionFailed):
         chain.wait.for_receipt(soul_token.transact({'from':accounts[1]}).changeObol(22))
 
+    # fails because bookingFee can onyl be changed by author
+    with pytest.raises(TransactionFailed):
+        chain.wait.for_receipt(soul_token.transact({'from':accounts[1]}).changeObol(22))
+
 
 def test_transferSoul(chain, accounts):
     provider = chain.provider
@@ -239,10 +261,10 @@ def test_transferSoul(chain, accounts):
     )
 
     reason = 'I`m bored'
-    rec = chain.wait.for_receipt(soul_token.transact({'from':accounts[1]}).sellSoul(reason, 1*finney))
+    rec = chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 1*finney))
 
     chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':1*finney}).buySoul(accounts[1]))
-    chain.wait.for_receipt(soul_token.transact({'from':accounts[3]}).sellSoul(reason, 2*finney))
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[3], 'value':booking_fee}).sellSoul(reason, 2*finney))
     chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':2*finney}).buySoul(accounts[3]))
 
 
@@ -299,10 +321,10 @@ def test_transferSoul_fails(chain, accounts):
     )
 
     reason = 'I`m bored'
-    rec = chain.wait.for_receipt(soul_token.transact({'from':accounts[1]}).sellSoul(reason, 1*finney))
+    rec = chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 1*finney))
 
     chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':1*finney}).buySoul(accounts[1]))
-    chain.wait.for_receipt(soul_token.transact({'from':accounts[3]}).sellSoul(reason, 2*finney))
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[3], 'value':booking_fee}).sellSoul(reason, 2*finney))
     chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':2*finney}).buySoul(accounts[3]))
 
     chain.wait.for_receipt(soul_token.transact({'from':accounts[0]}).changeBoat(accounts[5]))
@@ -344,7 +366,7 @@ def test_token_transfer(chain, accounts):
 
     # buy some tokens
     reason='äää'
-    chain.wait.for_receipt(soul_token.transact({'from':accounts[1]}).sellSoul(reason, 100*finney))
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 100*finney))
 
     chain.wait.for_receipt(soul_token.transact({'from':accounts[0], 'value':100*finney}).buySoul(accounts[1]))
 

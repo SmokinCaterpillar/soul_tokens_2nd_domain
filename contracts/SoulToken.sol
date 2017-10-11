@@ -133,6 +133,9 @@ contract SoulToken is ERC20Token{
     // number of souls owned by a someone
     mapping(address => uint256) public soulsOwned;
 
+    // book of souls
+    mapping(uint256 => address) public soulBook;
+
     // owner of the contract
     address public owner;
 
@@ -142,11 +145,19 @@ contract SoulToken is ERC20Token{
     // fee to pay to transfer soul
     uint8 public obol;
 
+    // small fee to insert soul into soul book
+    uint256 public bookingFee;
+
     // price per token
     uint256 public tokenPrice;
 
     // this the maximum of Soul
     uint256 totalSupply_;
+
+    //souls for sale
+    uint256 public soulsForSale;
+
+    uint256 public soulsSold;
 
     // Logs a soul transfer
     event SoulTransfer(address indexed _from, address indexed _to);
@@ -158,6 +169,10 @@ contract SoulToken is ERC20Token{
         obol = 10; // 10%, the ecclesiastical tithe
         // you get also 1000 Soul Peaces per Ether purchased
         tokenPrice = 1 finney / unit;
+        // fee for inserting into soulbook, holy 3 finney:
+        bookingFee = 3 finney;
+        soulsForSale = 0;
+        soulsSold = 0;
     }
 
     // fallback function, taken as donation!
@@ -168,6 +183,11 @@ contract SoulToken is ERC20Token{
     function changeObol(uint8 _obol) public {
         require(msg.sender == owner);
         obol = _obol;
+    }
+
+    function changeBookingFee(uint256 fee) public {
+        require(msg.sender == owner);
+        bookingFee = fee;
     }
 
 
@@ -201,20 +221,30 @@ contract SoulToken is ERC20Token{
     }
 
     // sells your soul for a given price and a given reason!
-    function sellSoul(string reason, uint256 price) public{
+    function sellSoul(string reason, uint256 price) public payable{
         string has_reason;
 
         // require that user gives a reason
         require(bytes(reason).length > 0);
 
+        // require to pay bookingFee
+        require(msg.value >= bookingFee);
+
         // assert has not sold his soul, yet
         has_reason = reasons[msg.sender];
         require(bytes(has_reason).length == 0);
         require(ownedBy[msg.sender] == address(0));
+
+        // pay book keeping fee
+        charonsBoat.transfer(msg.value);
+
         // store the reason forever on the blockchain
         reasons[msg.sender] = reason;
         // also the price is forever kept on the blockchain, so do not be too cheap
         soulPrices[msg.sender] = price;
+        // and keep the soul in the soul book
+        soulBook[soulsForSale + soulsSold] = msg.sender;
+        soulsForSale += 1;
     }
 
     // buys msg.sender a soul and rewards him with tokens!
@@ -236,7 +266,7 @@ contract SoulToken is ERC20Token{
         require(charonsObol > 0);
 
         // calculate the amount of Tokens
-        amount = msg.value / tokenPrice;
+        amount = price / tokenPrice;
         // check for wrap around
         require(totalSupply_ +  amount > totalSupply_);
         require(soulsOwned[msg.sender] + 1 > soulsOwned[msg.sender]);
@@ -248,6 +278,9 @@ contract SoulToken is ERC20Token{
 
         // Increase total supply by amount
         totalSupply_ += amount;
+        // Update the soul stats
+        soulsForSale -= 1;
+        soulsSold += 1;
         // Increase the sender's balance by the appropriate amount and souls ;-)
         soulsOwned[msg.sender] += 1;
         ownedBy[noSoulMate] = msg.sender;
