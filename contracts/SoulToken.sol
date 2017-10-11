@@ -43,15 +43,6 @@ contract ERC20Interface {
 // allows to send tokens around
 contract ERC20Token is ERC20Interface{
 
-    // The three letter symbol to define the token, should be overwritten in subclass
-    string public constant symbol = "TBA";
-
-    // Name of token should be overwritten in child
-    string public constant name = "TBA";
-
-    // 7 is a holy number so there are 7 decimals
-    uint8 public constant decimals = 7;
-
     // With 7 decimals, a single unit is 10**7
     uint256 public constant unit = 10000000;
 
@@ -121,6 +112,15 @@ contract ERC20Token is ERC20Interface{
 
 contract SoulToken is ERC20Token{
 
+    // The three letter symbol to define the token, should be overwritten in subclass
+    string public constant symbol = "SOUL";
+
+    // Name of token should be overwritten in child
+    string public constant name = "Soul Peaces";
+
+    // 7 is a holy number so there are 7 decimals
+    uint8 public constant decimals = 7;
+
     // mapping to keep the reason of the soul sale!
     mapping(address => string) public reasons;
 
@@ -157,6 +157,7 @@ contract SoulToken is ERC20Token{
     //souls for sale
     uint256 public soulsForSale;
 
+    // souls already sold
     uint256 public soulsSold;
 
     // Logs a soul transfer
@@ -190,15 +191,14 @@ contract SoulToken is ERC20Token{
         bookingFee = fee;
     }
 
-
-    function totalSupply() public constant returns (uint256){
-        return totalSupply_;
-    }
-
     // changes Charons boat, i.e. the address where the obol is payed to
     function changeBoat(address new_boat_) public{
         require(msg.sender == owner);
         charonsBoat = new_boat_;
+    }
+
+    function totalSupply() public constant returns (uint256){
+        return totalSupply_;
     }
 
     // returns the reason for the selling
@@ -218,6 +218,10 @@ contract SoulToken is ERC20Token{
 
     function soldHisSoulFor(address noSoulMate) public constant returns(uint256){
         return soulPrices[noSoulMate];
+    }
+
+    function soulBookPage(uint256 page) public constant returns(address){
+        return soulBook[page];
     }
 
     // sells your soul for a given price and a given reason!

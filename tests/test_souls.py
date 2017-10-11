@@ -40,6 +40,9 @@ def test_init(chain, accounts):
     assert soul_token.call().balanceOf(accounts[0]) == 0
     assert soul_token.call().balanceOf(accounts[1]) == 0
     assert soul_token.call().totalSupply() == 0
+    assert soul_token.call().name() == 'Soul Peaces'
+    assert soul_token.call().symbol() == 'SOUL'
+    assert soul_token.call().decimals() == decimals
 
 
 def test_sell_soul(chain, accounts):
@@ -55,6 +58,9 @@ def test_sell_soul(chain, accounts):
     assert soul_token.call().soldHisSouldBecause(accounts[0]) == ''
     assert soul_token.call().soldHisSoulFor(accounts[0]) == 0
     assert soul_token.call().soldHisSoulFor(accounts[1]) == 100
+    assert soul_token.call().soulBookPage(0) == accounts[1]
+    assert soul_token.call().soulsForSale() == 1
+    assert soul_token.call().soulsSold() == 0
 
 
 def test_sell_soul_fails_low_fee(chain, accounts):
@@ -92,6 +98,9 @@ def test_buy_soul(chain, accounts):
     reason = 'I`m bored'
     chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 1*finney))
 
+    assert soul_token.call().soulBookPage(0) == accounts[1]
+    assert soul_token.call().soulsForSale() == 1
+
     weis = get_wei(chain, accounts)
     chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':1*finney}).buySoul(accounts[1]))
     new_weis = get_wei(chain, accounts)
@@ -104,6 +113,10 @@ def test_buy_soul(chain, accounts):
     assert soul_token.call().balanceOf(accounts[0]) == 0
     assert weis[1] < new_weis[1]
     assert weis[2] > new_weis[2]
+    assert soul_token.call().soulBookPage(0) == accounts[1]
+    assert soul_token.call().soulBookPage(1) == null_address
+    assert soul_token.call().soulsForSale() == 0
+    assert soul_token.call().soulsSold() == 1
 
 
 def test_buy_multiple_souls(chain, accounts):
@@ -115,11 +128,31 @@ def test_buy_multiple_souls(chain, accounts):
     reason = 'I`m bored'
     rec = chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 1*finney))
 
+    assert soul_token.call().soulBookPage(0) == accounts[1]
+    assert soul_token.call().soulsForSale() == 1
+
     chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':1*finney}).buySoul(accounts[1]))
+
+    assert soul_token.call().soulBookPage(0) == accounts[1]
+    assert soul_token.call().soulBookPage(1) == null_address
+    assert soul_token.call().soulsForSale() == 0
+    assert soul_token.call().soulsSold() == 1
 
     chain.wait.for_receipt(soul_token.transact({'from':accounts[3], 'value':booking_fee}).sellSoul(reason, 2*finney))
 
+    assert soul_token.call().soulBookPage(0) == accounts[1]
+    assert soul_token.call().soulBookPage(1) == accounts[3]
+    assert soul_token.call().soulBookPage(2) == null_address
+    assert soul_token.call().soulsForSale() == 1
+    assert soul_token.call().soulsSold() == 1
+
     chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':2*finney}).buySoul(accounts[3]))
+
+    assert soul_token.call().soulBookPage(0) == accounts[1]
+    assert soul_token.call().soulBookPage(1) == accounts[3]
+    assert soul_token.call().soulBookPage(2) == null_address
+    assert soul_token.call().soulsForSale() == 0
+    assert soul_token.call().soulsSold() == 2
 
     assert soul_token.call().soulIsOwnedBy(accounts[1]) == accounts[2]
     assert soul_token.call().soulIsOwnedBy(accounts[3]) == accounts[2]
