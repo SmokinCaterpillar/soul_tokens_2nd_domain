@@ -23,6 +23,7 @@
 
     <!-- Custom styles for this template -->
     <link href="css/creative.min.css" rel="stylesheet">
+    <link href="css/mystyle.css" rel="stylesheet">
 
   </head>
 
@@ -41,10 +42,10 @@
               <a class="nav-link js-scroll-trigger" href="#about">About</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" href="#sell-soul">Services</a>
+              <a class="nav-link js-scroll-trigger" href="#sell-soul">Sell Soul</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" href="#portfolio">Portfolio</a>
+              <a class="nav-link js-scroll-trigger" href="#buy-souls">Buy Souls</a>
             </li>
             <li class="nav-item">
               <a class="nav-link js-scroll-trigger" href="#contact">Contact</a>
@@ -109,13 +110,13 @@
             If you buy someone's soul, you will also be rewarded with tokens, called <i>Soul Napkins</i>! Per Ether spent on people's souls, you get 1000 napkins!
             </p>
             <p class="text-faded">
-              Lastly, selling your soul and buying souls is, of course, not for free! Charon charges you for advertising
+              Lastly, selling your soul and buying souls is, of course, not for free! Charon, who helps me with this nifty business, charges you for advertising
               and soul transfers. Still, to not look to greedy half of the profits made with this website will be donated
             to the <a href="https://www.giordano-bruno-stiftung.de/en"><mark>Giordana Bruno Foundation</mark></a>. The foundation supports evolutionary Humanism and Secularism.
               The other half of the profits will most likely be spent on (more) drinks, though!
             <p>
             </p>
-            <a class="btn btn-default btn-xl js-scroll-trigger" href="#sell-soul">Sell Your Soul!</a> &nbsp <a class="btn btn-default btn-xl js-scroll-trigger" href="#sell-soul">Or buy some Souls!</a>
+            <a class="btn btn-default btn-xl js-scroll-trigger" href="#sell-soul">Sell Your Soul!</a> &nbsp <a class="btn btn-default btn-xl js-scroll-trigger" href="#buy-souls">Or buy some Souls!</a>
             </p>
 
 
@@ -135,39 +136,48 @@
       </div>
       <div class="container">
         <div class="row">
-          <div class="col-lg-3 col-md-6 text-center">
+          <p>
+          You can sell your Soul to total strangers!
+          Charon charges you a small fee of 3 finney for advertising your soul in his soul book. Moreover,
+          in case your soul is bought by someone, Charon further deducts a 10% transfer fee.
+          For example, if you want to sell your soul for 1 Ether, you have to pay 3 finney upfront.
+          In case someone decides to buy your soul, you will receive 0.9 Ether and 0.1 are
+          kept by Charon!
+          </p>
+          <p>
+            To sell your soul just enter your price below and add some small comment (whatever comes to your mind) and hit the button!
+            All of this will be stored forever and irreversibly on the Ethereum Blockchain! So I hope you thought it through and have
+            chosen your words wisely! Note that the longer your comment gets, the more gas you have to spend to carry out the transaction.
+            Better keep it short and simple!
+          </p>
+            <div class="col-lg-3 col-md-3 text-center">
             <div class="service-box">
-              <i class="fa fa-4x fa-diamond text-primary sr-icons"></i>
-              <h3>Sturdy Templates</h3>
-              <p class="text-muted">Our templates are updated regularly so they don't break.</p>
-            </div>
-          </div>
-          <div class="col-lg-3 col-md-6 text-center">
-            <div class="service-box">
-              <i class="fa fa-4x fa-paper-plane text-primary sr-icons"></i>
-              <h3>Ready to Ship</h3>
-              <p class="text-muted">You can use this theme as is, or you can make changes!</p>
-            </div>
-          </div>
-          <div class="col-lg-3 col-md-6 text-center">
+              <i class="fa fa-4x fa-dollar text-primary sr-icons"></i>
+              <h3>Soul Price</h3>
+              <div class="input-group input-group-lg">
+                <input type="number" class="form-control" id="soulPrice" aria-describedby="Ether" value=0.15 step=0.025>
+              </div><!-- /btn-group -->
+              <h3>Ether</h3>
+            </div></div>
+          <div class="col-lg-9 col-lg-9 text-center">
             <div class="service-box">
               <i class="fa fa-4x fa-newspaper-o text-primary sr-icons"></i>
-              <h3>Up to Date</h3>
-              <p class="text-muted">We update dependencies to keep things fresh.</p>
+              <h3>Soul Comment</h3>
+              <div class="input-group input-group-lg-12">
+                <input type="text" class="form-control" id="soulComment" value="Cause I'm bored!">
+              </div><!-- /btn-group -->
             </div>
+
           </div>
-          <div class="col-lg-3 col-md-6 text-center">
-            <div class="service-box">
-              <i class="fa fa-4x fa-heart text-primary sr-icons"></i>
-              <h3>Made with Love</h3>
-              <p class="text-muted">You have to make your websites with love these days!</p>
-            </div>
+          <div class="col-lg-9 col-md-9 text-center">
+            <a class="btn btn-default btn-xl" id="sellSoulButton">
+              <i class="fa fa-4x fa-paper-plane text-primary sr-icons"></i><h4>I hereby,<br> in full command of my mental faculties and<br> of my own free will,<br> <b>sell my Soul</b> on the Blockchain!</h4></a>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="p-0" id="portfolio">
+    <section class="soulbook" id="buy-souls">
       <div class="container-fluid">
         <div class="row no-gutter popup-gallery">
           <div class="col-lg-4 col-sm-6">

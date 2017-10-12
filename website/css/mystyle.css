@@ -1,0 +1,10 @@
+.soulbook {
+    background-image: url("../img/book.jpg");
+      background-position: center;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+  position: relative;
+  display: block;
+  margin: 0 auto; }
