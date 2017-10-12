@@ -116,7 +116,7 @@ contract SoulToken is ERC20Token{
     string public constant symbol = "SOUL";
 
     // Name of token should be overwritten in child
-    string public constant name = "Soul Peaces";
+    string public constant name = "Soul Napkins";
 
     // 7 is a holy number so there are 7 decimals
     uint8 public constant decimals = 7;
@@ -171,7 +171,7 @@ contract SoulToken is ERC20Token{
         // you get also 1000 Soul Peaces per Ether purchased
         tokenPrice = 1 finney / unit;
         // fee for inserting into soulbook, holy 3 finney:
-        bookingFee = 3 finney;
+        bookingFee = 13 finney;
         soulsForSale = 0;
         soulsSold = 0;
     }
