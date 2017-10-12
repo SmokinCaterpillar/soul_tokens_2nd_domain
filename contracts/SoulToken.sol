@@ -1,3 +1,5 @@
+pragma solidity ^0.4.17;
+
 // ERC Token standard #20 Interface
 // https://github.com/ethereum/EIPs/issues/20
 contract ERC20Interface {
@@ -42,9 +44,6 @@ contract ERC20Interface {
 // Implementation of the most intricate parts of the ERC20Interface that
 // allows to send tokens around
 contract ERC20Token is ERC20Interface{
-
-    // With 7 decimals, a single unit is 10**7
-    uint256 public constant unit = 10000000;
 
     // Balances for each account
     mapping(address => uint256) balances;
@@ -121,6 +120,9 @@ contract SoulToken is ERC20Token{
     // 7 is a holy number so there are 7 decimals
     uint8 public constant decimals = 7;
 
+    // With 7 decimals, a single unit is 10**7
+    uint256 public constant unit = 10000000;
+
     // mapping to keep the reason of the soul sale!
     mapping(address => string) public reasons;
 
@@ -163,7 +165,7 @@ contract SoulToken is ERC20Token{
     // Logs a soul transfer
     event SoulTransfer(address indexed _from, address indexed _to);
 
-    function SoulToken(){
+    function SoulToken() public{
         owner = msg.sender;
         charonsBoat = msg.sender;
         totalSupply_ = 0;
@@ -204,7 +206,7 @@ contract SoulToken is ERC20Token{
     }
 
     // returns the reason for the selling
-    function soldHisSouldBecause(address noSoulMate) public constant returns(string){
+    function soldHisSoulBecause(address noSoulMate) public constant returns(string){
         return reasons[noSoulMate];
     }
 
@@ -228,7 +230,7 @@ contract SoulToken is ERC20Token{
 
     // sells your soul for a given price and a given reason!
     function sellSoul(string reason, uint256 price) public payable{
-        string has_reason;
+        string storage has_reason = reasons[msg.sender];
 
         // require that user gives a reason
         require(bytes(reason).length > 0);
@@ -237,7 +239,6 @@ contract SoulToken is ERC20Token{
         require(msg.value >= bookingFee);
 
         // assert has not sold his soul, yet
-        has_reason = reasons[msg.sender];
         require(bytes(has_reason).length == 0);
         require(ownedBy[msg.sender] == address(0));
 
@@ -257,7 +258,6 @@ contract SoulToken is ERC20Token{
     function buySoul(address noSoulMate) public payable returns(uint amount){
         uint256 charonsObol;
         uint256 price;
-        uint256 tokens;
 
         // you cannot buy an owned soul:
         require(ownedBy[noSoulMate] == address(0));
@@ -312,7 +312,7 @@ contract SoulToken is ERC20Token{
     }
 
     // can transfer a soul to a different account, but beware you have to pay Charon again!
-    function transferSoul(address _to, address noSoulMate) payable{
+    function transferSoul(address _to, address noSoulMate) public payable{
         uint256 charonsObol;
 
         charonsObol = soulPrices[noSoulMate] / obol;

@@ -119,6 +119,36 @@ def test_buy_soul(chain, accounts):
     assert soul_token.call().soulsSold() == 1
 
 
+def test_buy_own_soul(chain, accounts):
+    provider = chain.provider
+    soul_token, deploy_txn_hash = provider.get_or_deploy_contract(
+        'SoulToken'
+    )
+
+    reason = 'I`m bored'
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 1*finney))
+
+    assert soul_token.call().soulBookPage(0) == accounts[1]
+    assert soul_token.call().soulsForSale() == 1
+
+    weis = get_wei(chain, accounts)
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':1*finney}).buySoul(accounts[1]))
+    new_weis = get_wei(chain, accounts)
+
+    assert soul_token.call().soulIsOwnedBy(accounts[1]) == accounts[1]
+    assert soul_token.call().soulIsOwnedBy(accounts[2]) == null_address
+    assert soul_token.call().ownsSouls(accounts[2]) == 0
+    assert soul_token.call().ownsSouls(accounts[1]) == 1
+    assert soul_token.call().balanceOf(accounts[2]) == 0
+    assert soul_token.call().balanceOf(accounts[1]) == 1*unit
+    assert weis[1] > new_weis[1]
+    assert weis[2] == new_weis[2]
+    assert soul_token.call().soulBookPage(0) == accounts[1]
+    assert soul_token.call().soulBookPage(1) == null_address
+    assert soul_token.call().soulsForSale() == 0
+    assert soul_token.call().soulsSold() == 1
+
+
 def test_buy_multiple_souls(chain, accounts):
     provider = chain.provider
     soul_token, deploy_txn_hash = provider.get_or_deploy_contract(
@@ -200,6 +230,15 @@ def test_superlong_reason(chain, accounts):
     reason = 'a' * 999
     receipt = chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 1*finney))
     assert receipt.gasUsed > 500000
+    assert receipt.gasUsed < 200000 + 1000*999
+
+    reason = 'a' * 666
+    receipt = chain.wait.for_receipt(soul_token.transact({'from':accounts[3], 'value':booking_fee}).sellSoul(reason, 1*finney))
+    assert receipt.gasUsed < 200000+1000*666
+
+    reason = 'a'
+    receipt = chain.wait.for_receipt(soul_token.transact({'from':accounts[4], 'value':booking_fee}).sellSoul(reason, 1*finney))
+    assert receipt.gasUsed < 200000
 
 
 def test_fail_on_empty_reason(chain, accounts):
