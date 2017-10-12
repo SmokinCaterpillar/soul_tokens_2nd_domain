@@ -204,10 +204,19 @@ header.masthead {
     margin-bottom: 0; }
 
 .portfolio-box {
+  background-image: url("../img/paper.png");
+      background-position: center;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
   position: relative;
   display: block;
-  max-width: 650px;
-  margin: 0 auto; }
+  min-widht: 220px;
+  max-width: 300px;
+  min-height:300px;
+  max-height:320px;
+  margin: 10px auto; }
   .portfolio-box .portfolio-box-caption {
     position: absolute;
     bottom: 0;
