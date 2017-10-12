@@ -262,7 +262,7 @@ header.masthead {
 .btn-default {
   color: #222222;
   border-color: white;
-  background-color: white; }
+  background-color: #EFEFEF; }
   .btn-default.focus, .btn-default:focus {
     color: #222222;
     border-color: #bfbfbf;
