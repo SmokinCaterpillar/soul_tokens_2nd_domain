@@ -179,6 +179,8 @@ contract SoulToken is ERC20Token{
     // fallback function, taken as donation!
     function () public payable {
         charonsBoat.transfer(msg.value);
+        // give away some napkins in return
+        transferNapkins();
     }
 
     function changeObol(uint8 _obol) public {
@@ -269,10 +271,7 @@ contract SoulToken is ERC20Token{
         // you gotta pay Charon
         require(charonsObol > 0);
 
-        // calculate the amount of Tokens
-        amount = price / tokenPrice;
-        // check for wrap around
-        require(totalSupply_ +  amount > totalSupply_);
+        // check for Wrap around
         require(soulsOwned[msg.sender] + 1 > soulsOwned[msg.sender]);
 
         // pay Charon
@@ -280,20 +279,36 @@ contract SoulToken is ERC20Token{
         // pay the soul owner:
         noSoulMate.transfer(msg.value - charonsObol);
 
-        // Increase total supply by amount
-        totalSupply_ += amount;
+
         // Update the soul stats
         soulsForSale -= 1;
         soulsSold += 1;
-        // Increase the sender's balance by the appropriate amount and souls ;-)
+        // Increase the sender's balance by the appropriate amount of souls ;-)
         soulsOwned[msg.sender] += 1;
         ownedBy[noSoulMate] = msg.sender;
-        balances[msg.sender] += amount;
-        // log the transfers
-        Transfer(this, msg.sender, amount);
+        // log the transfer
         SoulTransfer(noSoulMate, msg.sender);
 
+        // and give away napkins
+        amount = transferNapkins();
+
         return amount;
+    }
+
+    function transferNapkins() internal returns (uint256 amount){
+        // calculate the amount of Tokens
+        amount = msg.value / tokenPrice;
+        // check for wrap around
+        require(totalSupply_ +  amount > totalSupply_);
+
+        // Increase total supply by amount
+        totalSupply_ += amount;
+        // send napkins
+        balances[msg.sender] += amount;
+        // log napkin transfer
+        Transfer(this, msg.sender, amount);
+        return amount;
+
     }
 
     // can transfer a soul to a different account, but beware you have to pay Charon again!

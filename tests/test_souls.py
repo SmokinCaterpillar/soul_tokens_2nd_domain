@@ -6,7 +6,7 @@ import time
 ether = int(1e18)
 finney = int(ether/1000)
 vig = 10
-booking_fee = 3*finney
+booking_fee = 13*finney
 
 decimals = 7
 unit = int(1e7)
@@ -40,7 +40,7 @@ def test_init(chain, accounts):
     assert soul_token.call().balanceOf(accounts[0]) == 0
     assert soul_token.call().balanceOf(accounts[1]) == 0
     assert soul_token.call().totalSupply() == 0
-    assert soul_token.call().name() == 'Soul Peaces'
+    assert soul_token.call().name() == 'Soul Napkins'
     assert soul_token.call().symbol() == 'SOUL'
     assert soul_token.call().decimals() == decimals
 
@@ -180,7 +180,7 @@ def test_buy_soulmore(chain, accounts):
     assert soul_token.call().soulIsOwnedBy(accounts[2]) == null_address
     assert soul_token.call().ownsSouls(accounts[2]) == 1
     assert soul_token.call().ownsSouls(accounts[1]) == 0
-    assert soul_token.call().balanceOf(accounts[2]) == 1*unit
+    assert soul_token.call().balanceOf(accounts[2]) == 2*unit
     assert soul_token.call().balanceOf(accounts[0]) == 0
     assert weis[1] < new_weis[1]
     assert weis[2] > new_weis[2]
@@ -239,7 +239,7 @@ def test_vig(chain, accounts):
     assert soul_token.call().soulIsOwnedBy(accounts[2]) == null_address
     assert soul_token.call().ownsSouls(accounts[2]) == 1
     assert soul_token.call().ownsSouls(accounts[1]) == 0
-    assert soul_token.call().balanceOf(accounts[2]) == 1*unit
+    assert soul_token.call().balanceOf(accounts[2]) == 2*unit
     assert soul_token.call().balanceOf(accounts[0]) == 0
     assert weis[1] + 2*finney - obol == new_weis[1]
     assert weis[2] > new_weis[2]
@@ -378,16 +378,20 @@ def test_fallback(chain, accounts, web3):
         'SoulToken'
     )
 
+    weis = get_wei(chain, accounts)
+
     chain.wait.for_receipt(soul_token.transact({'from':accounts[0]}).changeBoat(accounts[5]))
 
-    weis = get_wei(chain, accounts)
-    obol = 1*finney
-    chain.wait.for_receipt(web3.eth.sendTransaction({'from':accounts[2], 'value':obol, 'to':soul_token.address,
-                                                     'gas':2000000}))
+    chain.wait.for_receipt(web3.eth.sendTransaction({'value':10*finney, 'from':accounts[1], 'to': soul_token.address,
+                                                     'gas':200000}))
+    chain.wait.for_receipt(web3.eth.sendTransaction({'value':20*finney, 'from':accounts[0], 'to': soul_token.address,
+                                                     'gas':200000}))
     new_weis = get_wei(chain, accounts)
 
-    assert weis[5] + obol == new_weis[5]
-    assert weis[2] > new_weis[2]
+    assert weis[5] + 30*finney == new_weis[5]
+    assert soul_token.call().balanceOf(accounts[0]) == 20*unit
+    assert soul_token.call().balanceOf(accounts[1]) == 10*unit
+
 
 
 def test_token_transfer(chain, accounts):
