@@ -150,7 +150,7 @@ function getWrittenNapkingSold(index, soul, reason, owner){
                       "<div class='portfolio-box-caption'>" +
                         "<div class='portfolio-box-caption-content'>" +
                           "<div class='project-category text-faded'>" +
-                            "Soul of <br><small>&quot" + soul1Half + "<br>" + soul2Half + "&quot</small>" +
+                            "Soul of <br>&quot" + soul1Half + "<br>" + soul2Half + "&quot" +
                           "</div>" +
                           "<div class='project-name'>" +
                             "Already Sold to <br><small>&quot" + owner1Half + "<br>" + owener2Half + "&quot</small>" +
@@ -174,7 +174,7 @@ function getWrittenNapkingForSale(index, soul, reason, priceInEth){
                       "<div class='portfolio-box-caption'>" +
                         "<div class='portfolio-box-caption-content'>" +
                           "<div class='project-category text-faded'>" +
-                            "Soul of <br><small>&quot" + soul1Half + "<br>" + soul2Half + "&quot</small>" +
+                            "Soul of <br>&quot" + soul1Half + "<br>" + soul2Half + "&quot" +
                           "</div>" +
                           "<div class='project-name'>" +
                             "For Sale: Only " + priceInEth + " ETH!" +
@@ -211,6 +211,7 @@ function getSoulBook(){
             if ((currentPage <= 0) || (currentPage > totalPages)) {
                 currentPage = totalPages
             }
+            document.getElementById('pageNumber').innerHTML = "Page " + currentPage;
             document.getElementById('soulBook').innerHTML = "";
             lookUpSouls(totalSouls);
 
