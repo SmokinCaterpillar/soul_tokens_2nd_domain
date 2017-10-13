@@ -34,7 +34,7 @@ var unit = 10000000;
 
 var currentPage = -1;
 var totalPages = 1;
-var soulsPerPage = 8;
+var soulsPerPage = 2;
 var onSale = false;
 
 function startApp() {
@@ -47,15 +47,44 @@ function startApp() {
 
     // Event Listener for buying Impeachment Tokens
     listenForSoulSellsClicks();
+    listenForNextPageClicks();
+    listenForPreviousPageClicks();
     // check if coinbase is on sale
     checkOnSale();
     // Update the Balances
     updateBalances();
     updateTotalSupply();
-    getSoulBook();
+    getSoulBook(-1);
 
     console.log('App started.')
 }
+
+function listenForNextPageClicks(){
+    var button = document.getElementById('nextPage');
+    button.addEventListener('click', function() {
+        turnPage(1)
+    });
+}
+
+function listenForPreviousPageClicks(){
+    var button = document.getElementById('previousPage');
+    button.addEventListener('click', function() {
+        turnPage(-1)
+    });
+}
+
+function turnPage(howMany){
+    currentPage += howMany;
+    //code before the pause
+    var page = currentPage;
+    document.getElementById('pageNumber').innerHTML = "<mark>Page " + page + "</mark>";
+    setTimeout(function(){
+        getSoulBook(page)
+    }, 200);
+
+}
+
+
 
 function listenForSoulSellsClicks() {
   var button = document.getElementById('sellSoulButton');
@@ -73,8 +102,8 @@ function listenForSoulSellsClicks() {
           alert('You did put your soul already on sale! Sneaky, but sorry, you can sell your soul only once!')
       } else if (rLength === 0){
           alert('C`mon you need a reason to sell your soul!');
-      } else if(rLength > 666) {
-          alert('Your reason is too long with ' + rLength + ' characters, please use 666 or less!')
+      } else if(rLength > 333) {
+          alert('Your reason is too long with ' + rLength + ' characters, please use 333 or less! It must fit on a napkin!')
       } else{
           var gas = 200000 + 1000 * rLength;
           soulToken.sellSoul(reason, inWei, {from: web3.eth.coinbase, value:bookingFeeInWei, gas: gas}).then(function (txHash) {
@@ -136,7 +165,7 @@ function updateBalances(){
 }
 
 
-function getWrittenNapkingSold(index, soul, reason, owner){
+function getWrittenNapkingSold(index, soul, reason, priceInEth, owner){
     var half = soul.length / 2;
     var soul1Half = soul.substr(0, half);
     var soul2Half = soul.substr(half + 1);
@@ -144,9 +173,12 @@ function getWrittenNapkingSold(index, soul, reason, owner){
     var owener2Half = owner.substr(half + 1);
     var htmlText="<div class='col-lg-3 col-sm-3'>" +
                     "<a class='portfolio-box text-faded text-center' id=" + soul + ">" +
-                      "<h2>SOUL #" + index + "</h2><br>" +
+                      "<h5>SOUL #" + index + "</h5>" +
                       "<p> <i>" + reason + "</i></p>" +
-                      "<p><b>Owned by " + owner.substr(0, 7) + "...</b></p>" +
+                      "<p>" +
+                        "<b>Owned by " + owner.substr(0, 7) + "..." +
+                        "<br>bought for " + priceInEth + " ETH</b>" +
+                      "</p>" +
                       "<div class='portfolio-box-caption'>" +
                         "<div class='portfolio-box-caption-content'>" +
                           "<div class='project-category text-faded'>" +
@@ -168,16 +200,16 @@ function getWrittenNapkingForSale(index, soul, reason, priceInEth){
     var soul2Half = soul.substr(half + 1);
     var htmlText="<div class='col-lg-3 col-sm-3'>" +
                     "<a class='portfolio-box text-faded text-center' id=" + soul + ">" +
-                      "<h2>SOUL #" + index + "</h2><br>" +
+                      "<h5>SOUL #" + index + "</h5>" +
                       "<p> <i>" + reason + "</i></p>" +
-                      "<p><b>Avialbale for " + priceInEth + " ETH</b></p>" +
+                      "<p><b>Available for " + priceInEth + " ETH</b></p>" +
                       "<div class='portfolio-box-caption'>" +
                         "<div class='portfolio-box-caption-content'>" +
                           "<div class='project-category text-faded'>" +
                             "Soul of <br>&quot" + soul1Half + "<br>" + soul2Half + "&quot" +
                           "</div>" +
                           "<div class='project-name'>" +
-                            "For Sale: Only " + priceInEth + " ETH!" +
+                            "For Sale:<br>Only " + priceInEth + " ETH!" +
                           "</div>" +
                         "</div>" +
                       "</div>" +
@@ -187,7 +219,7 @@ function getWrittenNapkingForSale(index, soul, reason, priceInEth){
 }
 
 
-function getSoulBook(){
+function getSoulBook(page){
     var soulsForSale;
     var soulsSold;
     var totalSouls;
@@ -201,27 +233,33 @@ function getSoulBook(){
             soulsSold = results[0];
             console.log('soulsSold ' + soulsSold);
 
-            htmlText = "<mark>" + soulsForSale + " Soul(s) for Sale and " + soulsSold + " soul(s) sold! " +
+            htmlText = "<mark>" + soulsForSale + " Soul(s) for sale and " + soulsSold + " soul(s) sold! " +
                 "Just click on one of the souls to purchase it!</mark>";
             document.getElementById('status').innerHTML = htmlText
 
             totalSouls  = Number(soulsSold) + Number(soulsForSale);
             totalPages = Math.ceil(totalSouls / soulsPerPage);
             console.log('Soul book has pages ' + totalPages + ' and souls ' + totalSouls);
-            if ((currentPage <= 0) || (currentPage > totalPages)) {
-                currentPage = totalPages
+            if (page <= 0) {
+                page = totalPages
+            } else if (page > totalPages) {
+                page = 1
             }
-            document.getElementById('pageNumber').innerHTML = "Page " + currentPage;
+
+            document.getElementById('pageNumber').innerHTML = "<mark>Page " + page + " of " + totalPages + "</mark>";
             document.getElementById('soulBook').innerHTML = "";
-            lookUpSouls(totalSouls);
+            if ((page === currentPage) || (page === totalPages) || (page === 1)) {
+                lookUpSouls(page, totalSouls);
+                currentPage = page
+            }
 
         });
     });
 };
 
 
-function lookUpSouls(totalSouls) {
-    var end = Math.min(totalSouls, currentPage * soulsPerPage);
+function lookUpSouls(page, totalSouls) {
+    var end = Math.min(totalSouls, page * soulsPerPage);
     var start = Math.max(0, end - soulsPerPage);
     console.log('Looking up souls from idx ' + start + ' to idx ' + end);
     for (var idx = start; idx < end; idx++) {
@@ -246,6 +284,16 @@ function loadIndividualSoul(soulIndex){
             reason = results[0];
             console.log('Found reason ' + reason);
 
+            if (reason.length > 333){
+                reason = reason.substr(0, 333) +"...";
+            }
+            if (reason.length > 111){
+                reason = "<small>" + reason + "</small>"
+            } else {
+                reason = "<br>" + reason
+            }
+
+
             soulToken.soldHisSoulFor(soul).then(function (results) {
                 price = results[0];
                 console.log('Found price ' + price);
@@ -254,12 +302,14 @@ function loadIndividualSoul(soulIndex){
                     owner = results[0];
                     console.log('Found owner ' + owner);
 
+                    priceInEth = web3.fromWei(price, 'ether');
+                    priceInEth = round(priceInEth, 4);
+
                     if (owner === nullAddress){
-                        priceInEth = web3.fromWei(price, 'ether');
-                        priceInEth = round(priceInEth, 4);
+
                         htmlText = getWrittenNapkingForSale(soulIndex + 1, soul, reason, priceInEth);
                     } else {
-                        htmlText = getWrittenNapkingSold(soulIndex + 1, soul, reason, owner);
+                        htmlText = getWrittenNapkingSold(soulIndex + 1, soul, reason, priceInEth, owner);
                     }
                     document.getElementById('soulBook').innerHTML += htmlText;
                 });
