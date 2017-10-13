@@ -212,11 +212,11 @@ header.masthead {
       background-size: cover;
   position: relative;
   display: block;
-  min-widht: 220px;
+  min-widht: 300px;
   max-width: 300px;
   min-height:300px;
-  max-height:320px;
-  margin: 10px auto; }
+  max-height:480px;
+  margin: 5px auto; }
   .portfolio-box .portfolio-box-caption {
     position: absolute;
     bottom: 0;

@@ -320,9 +320,9 @@ contract SoulToken is ERC20Token{
         SoulTransfer(msg.sender, _to);
     }
 
-    function payCharon(uint256 obol) internal{
-        totalObol += obol;
-        charonsBoat.transfer(obol);
+    function payCharon(uint256 obolValue) internal{
+        totalObol += obolValue;
+        charonsBoat.transfer(obolValue);
     }
 
     function payOutNapkins(uint256 value) internal returns (uint256 amount){
