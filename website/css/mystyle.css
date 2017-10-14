@@ -28,3 +28,14 @@
       margin-left: 45px;
       margin-right: 45px;
 }
+
+.faq {
+    cursor: pointer;
+    font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 28px;
+    font-weight: 300;
+    padding: 10px;
+    width: auto;
+    border: 2px groove #f05f40;
+    display: inline-block;
+}

@@ -29,7 +29,7 @@ const contractAbi = [{"constant":true,"inputs":[{"name":"noSoulMate","type":"add
 const nullAddress = "0x0000000000000000000000000000000000000000"
 
 var soulToken;  // global reference to impeachment contract
-var bookingFee = 0.013;
+var bookingFee = 0.03;
 var unit = 1000000;
 
 var currentPage = -1;
@@ -125,12 +125,12 @@ function updateTotalSupply(){
         console.log('napkins ' + napkins);
         napkins = new BigNumber(napkins).dividedBy(unit);
         napkins = round(napkins, 0);
-        var htmlText = "In total Charon has distributed " + napkins + " napkins out of 144000."
+        var htmlText = "In total Charon has distributed " + napkins + " napkins out of all available 144000.";
 
         document.getElementById('totalSupply').innerHTML = htmlText;
 
-        htmlText = "Hurry, because in total Charon only sells 144000 Soul Napkins and there are only " +
-                   "<b>" + (144000 - napkins) + "</b> napkins left!"
+        htmlText = "Hurry, because Charon only sells 144000 Soul Napkins and there are only " +
+                   "<b>" + (144000 - napkins) + "</b> napkins left!";
 
         document.getElementById('supplyLeft').innerHTML = htmlText;
     });
@@ -242,8 +242,8 @@ function getSoulBook(page){
             console.log('soulsSold ' + soulsSold);
 
             htmlText = "<mark>" + soulsForSale + " Soul(s) for sale and " + soulsSold + " soul(s) sold! " +
-                "Just click on one of the souls to purchase it! After your purchase, " +
-                "wait a couple of minutes until your transaction is mined into the Blockchain and refresh this website" +
+                "Just click on one of the napkins to purchase the soul! After your purchase, " +
+                "wait a couple of minutes until your transaction is mined into the Blockchain and refresh this website " +
                 "to see that you are the new owner of that soul.</mark>"
             document.getElementById('status').innerHTML = htmlText
 

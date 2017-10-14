@@ -354,6 +354,7 @@ contract SoulToken is ERC20Token{
         return checkedAmount;
     }
 
+    // transfers napkins to people
     function payOutNapkins(uint256 amount) internal{
         // check for amount and wrap around
         require(amount > 0);
