@@ -123,9 +123,15 @@ function updateTotalSupply(){
         napkins = results[0];
         console.log('napkins ' + napkins);
         napkins = new BigNumber(napkins).dividedBy(unit);
-        var htmlText = "In total Charon has distributed " + napkins + " napkins."
+        napkins = round(napkins, 0);
+        var htmlText = "In total Charon has distributed " + napkins + " napkins out of 144000."
 
-        document.getElementById('totalSupply').innerHTML = htmlText
+        document.getElementById('totalSupply').innerHTML = htmlText;
+
+        htmlText = "Hurry, because in total Charon only sells 144000 Soul Napkins and there are only " +
+                   "<b>" + (144000 - napkins) + "</b> napkins left!"
+
+        document.getElementById('supplyLeft').innerHTML = htmlText;
     });
 
 }
@@ -172,10 +178,10 @@ function getWrittenNapkingSold(index, soul, reason, priceInEth, owner){
     var soul2Half = soul.substr(half + 1);
     var owner1Half = owner.substr(0, half);
     var owener2Half = owner.substr(half + 1);
-    var htmlText="<div class='col-lg-3 col-sm-3'>" +
-                    "<a class='portfolio-box text-faded text-center' id=" + soul + ">" +
+    var htmlText="<div class='stacker col-lg-3 col-sm-3'>" +
+                    "<a class='portfolio-box text-faded text-center' id=" + soul + "><br>" +
                       "<h5>SOUL #" + index + "</h5>" +
-                      "<p> <i>" + reason + "</i></p>" +
+                      "<div class='selector'><p> <i>" + reason + "</i></p></div>" +
                       "<p>" +
                         "<b>Owned by " + owner.substr(0, 7) + "..." +
                         "<br>bought for " + priceInEth + " ETH</b>" +
@@ -199,10 +205,10 @@ function getWrittenNapkingForSale(index, soul, reason, priceInEth){
     var half = soul.length / 2;
     var soul1Half = soul.substr(0, half);
     var soul2Half = soul.substr(half + 1);
-    var htmlText="<div class='col-lg-3 col-sm-3'>" +
-                    "<a class='portfolio-box text-faded text-center'>" +
+    var htmlText="<div class='stacker col-lg-3 col-sm-3'>" +
+                    "<a class='portfolio-box text-faded text-center'><br>" +
                       "<h5>SOUL #" + index + "</h5>" +
-                      "<p> <i>" + reason + "</i></p>" +
+                      "<div class='selector'><p> <i>" + reason + "</i></p></div>" +
                       "<p><b>Available for " + priceInEth + " ETH</b></p>" +
                       "<div class='portfolio-box-caption' id=" + soul + ">" +
                         "<div class='portfolio-box-caption-content' id=b" + soul + ">" +
@@ -235,7 +241,9 @@ function getSoulBook(page){
             console.log('soulsSold ' + soulsSold);
 
             htmlText = "<mark>" + soulsForSale + " Soul(s) for sale and " + soulsSold + " soul(s) sold! " +
-                "Just click on one of the souls to purchase it!</mark>";
+                "Just click on one of the souls to purchase it! After your purchase, " +
+                "wait a couple of minutes until your transaction is mined into the Blockchain and refresh this website" +
+                "to see that you are the new owner of that soul.</mark>"
             document.getElementById('status').innerHTML = htmlText
 
             totalSouls  = Number(soulsSold) + Number(soulsForSale);
@@ -312,7 +320,7 @@ function loadIndividualSoul(soulIndex){
                 reason = reason.substr(0, 333) +"...";
             }
             if (reason.length > 111){
-                reason = "<small>" + reason + "</small>"
+                reason =  reason
             } else {
                 reason = "<br>" + reason
             }

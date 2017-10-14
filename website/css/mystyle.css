@@ -8,3 +8,23 @@
   position: relative;
   display: block;
   margin: 0 auto; }
+
+
+.selector {
+      word-wrap: break-word;      /* IE 5.5-7 */
+      white-space: -moz-pre-wrap; /* Firefox 1.0-2.0 */
+      white-space: pre-wrap;      /* current browsers */
+      width: 300px;
+      margin-left: 25px;
+      margin-right: 25px;
+}
+
+.stacker {
+    float: left;
+    min-width: 350px;
+}
+
+.bookmargin {
+      margin-left: 45px;
+      margin-right: 45px;
+}

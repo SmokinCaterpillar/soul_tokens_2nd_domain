@@ -212,10 +212,8 @@ header.masthead {
       background-size: cover;
   position: relative;
   display: block;
-  min-widht: 300px;
-  max-width: 300px;
-  min-height:300px;
-  max-height:480px;
+  width: 350px;
+  height:350px;
   margin: 5px auto; }
   .portfolio-box .portfolio-box-caption {
     position: absolute;
@@ -265,8 +263,8 @@ header.masthead {
   color: #F05F40 !important; }
 
 .no-gutter > [class*='col-'] {
-  padding-right: 0;
-  padding-left: 0; }
+  padding-right: 10px;
+  padding-left: 10px; }
 
 .btn-default {
   color: #222222;
