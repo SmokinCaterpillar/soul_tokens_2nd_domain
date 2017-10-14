@@ -304,7 +304,7 @@ contract SoulToken is ERC20Token{
         SoulTransfer(noSoulMate, msg.sender);
 
         // and give away napkins proportional to msg value plus 1 bonus napkin ;-)
-        amount = msg.value / napkinPrice + unit;
+        amount = charonsObol / napkinPrice + unit;
         amount = checkAmount(amount);
         if (amount > 0){
             // only payout napkins if they are available
