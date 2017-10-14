@@ -19,6 +19,11 @@
       margin-right: 25px;
 }
 
+.handover {
+    cursor: pointer;
+    cursor: hand;
+}
+
 .stacker {
     float: left;
     min-width: 350px;

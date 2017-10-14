@@ -206,13 +206,13 @@ function getWrittenNapkingForSale(index, soul, reason, priceInEth){
     var soul1Half = soul.substr(0, half);
     var soul2Half = soul.substr(half + 1);
     var htmlText="<div class='stacker col-lg-3 col-sm-3'>" +
-                    "<a class='portfolio-box text-faded text-center'><br>" +
+                    "<a class='portfolio-box text-faded text-center handover'><br>" +
                       "<h5>SOUL #" + index + "</h5>" +
                       "<div class='selector'><p> <i>" + reason + "</i></p></div>" +
                       "<p><b>Available for " + priceInEth + " ETH</b></p>" +
-                      "<div class='portfolio-box-caption' id=" + soul + ">" +
-                        "<div class='portfolio-box-caption-content' id=b" + soul + ">" +
-                          "<div class='project-category text-faded' id=c" + soul + ">" +
+                      "<div class='portfolio-box-caption handover' id=" + soul + ">" +
+                        "<div class='portfolio-box-caption-content handover' id=b" + soul + ">" +
+                          "<div class='project-category text-faded handover' id=c" + soul + ">" +
                             "Soul of <br>&quot" + soul1Half + "<br>" + soul2Half + "&quot" +
                           "</div>" +
                           "<div class='project-name' id=n" + soul + ">" +
