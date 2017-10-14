@@ -13,16 +13,16 @@ contract ERC20Interface {
     // Decimals of token
     uint8 public constant decimals = 18;
 
-    // Get the total token supply
+    // Total token supply
     function totalSupply() public constant returns (uint256 supply);
 
-    // Get the account balance of another account with address _owner
+    // The balance of account with address _owner
     function balanceOf(address _owner) public constant returns (uint256 balance);
 
-    // Send _value amount of tokens to address _to
+    // Send _value tokens to address _to
     function transfer(address _to, uint256 _value) public returns (bool success);
 
-    // Send _value amount of tokens from address _from to address _to
+    // Send _value tokens from address _from to address _to
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
 
     // Allow _spender to withdraw from your account, multiple times, up to the _value amount.
@@ -41,22 +41,21 @@ contract ERC20Interface {
 }
 
 
-// Implementation of the most intricate parts of the ERC20Interface that
-// allows to send tokens around
+// Implementation of ERC20Interface
 contract ERC20Token is ERC20Interface{
 
-    // Balances for each account
+    // account balances
     mapping(address => uint256) balances;
 
     // Owner of account approves the transfer of amount to another account
     mapping(address => mapping (address => uint256)) allowed;
 
-    // What is the balance of a particular account?
+    // Function to access acount balances
     function balanceOf(address _owner) public constant returns (uint256) {
         return balances[_owner];
     }
 
-    // Transfer the balance from owner's account to another account
+    // Transfer the _amount from msg.sender to _to account
     function transfer(address _to, uint256 _amount) public returns (bool) {
         if (balances[msg.sender] >= _amount && _amount > 0
                 && balances[_to] + _amount > balances[_to]) {
@@ -111,17 +110,27 @@ contract ERC20Token is ERC20Interface{
 
 contract SoulToken is ERC20Token{
 
-    // The three letter symbol to define the token, should be overwritten in subclass
+    // The three letter symbol of token
     string public constant symbol = "SOUL";
 
-    // Name of token should be overwritten in child
+    // Name of token
     string public constant name = "Soul Napkins";
 
-    // 7 is a holy number so there are 6 decimals
+    // 6 is a holy number (2*3) so there are 6 decimals
     uint8 public constant decimals = 6;
 
-    // With 7 decimals, a single unit is 10**6
+    // With 6 decimals, a single unit is 10**6
     uint256 public constant unit = 1000000;
+
+    // fee to pay to transfer soul, 10% like the ecclesiastical tithe
+    uint8 public constant obol = 10;
+
+    // price per token, 100 napkins per Ether
+    uint256 public constant napkinPrice = 10 finney / unit;
+
+    // Maximum number of napkins available
+    // 144,000 (get it?)
+    uint256 public constant maximumSupply = 144000*unit;
 
     // mapping to keep the reason of the soul sale!
     mapping(address => string) reasons;
@@ -144,14 +153,8 @@ contract SoulToken is ERC20Token{
     // Address where souls obol is due to
     address public charonsBoat;
 
-    // fee to pay to transfer soul
-    uint8 public obol;
-
     // small fee to insert soul into soul book
     uint256 public bookingFee;
-
-    // price per token
-    uint256 public napkinPrice;
 
     // this the maximum of Soul
     uint256 totalSupply_;
@@ -172,28 +175,34 @@ contract SoulToken is ERC20Token{
         owner = msg.sender;
         charonsBoat = msg.sender;
         totalSupply_ = 0;
-        obol = 10; // 10%, the ecclesiastical tithe
-        // you get also 1000 Soul Peaces per Ether purchased
-        napkinPrice = 1 finney / unit;
-        // fee for inserting into soulbook, holy 3 finney:
+        // fee for inserting into soulbook, unholy 13 finney:
         bookingFee = 13 finney;
         soulsForSale = 0;
         soulsSold = 0;
         totalObol = 0;
+        // 1111 napkins for the dev ;-)
+        payOutNapkins(1111 * unit);
     }
 
     // fallback function, Charon sell napkins as merchandise!
     function () public payable {
+        uint256 amount;
+        uint256 checkedAmount;
         // forward money to Charon
         payCharon(msg.value);
         // give away some napkins in return proportional to value
-        payOutNapkins(msg.value);
+        amount = msg.value / napkinPrice;
+        checkedAmount = checkAmount(amount);
+        // only payout napkins if there is the apporpriate amount available
+        // else throw
+        require(amount == checkedAmount);
+        payOutNapkins(checkedAmount);
     }
 
-    function changeObol(uint8 _obol) public {
-        require(msg.sender == owner);
-        obol = _obol;
-    }
+//    function changeObol(uint8 _obol) public {
+//        require(msg.sender == owner);
+//        obol = _obol;
+//    }
 
     function changeBookingFee(uint256 fee) public {
         require(msg.sender == owner);
@@ -261,7 +270,7 @@ contract SoulToken is ERC20Token{
     }
 
     // buys msg.sender a soul and rewards him with tokens!
-    function buySoul(address noSoulMate) public payable returns(uint amount){
+    function buySoul(address noSoulMate) public payable returns(uint256 amount){
         uint256 charonsObol;
         uint256 price;
 
@@ -295,7 +304,12 @@ contract SoulToken is ERC20Token{
         SoulTransfer(noSoulMate, msg.sender);
 
         // and give away napkins proportional to msg value plus 1 bonus napkin ;-)
-        amount = payOutNapkins(msg.value + napkinPrice * unit);
+        amount = msg.value / napkinPrice + unit;
+        amount = checkAmount(amount);
+        if (amount > 0){
+            // only payout napkins if they are available
+            payOutNapkins(amount);
+        }
 
         return amount;
     }
@@ -325,11 +339,27 @@ contract SoulToken is ERC20Token{
         charonsBoat.transfer(obolValue);
     }
 
-    function payOutNapkins(uint256 value) internal returns (uint256 amount){
-        // calculate the amount of Tokens
-        amount = value / napkinPrice;
+    // checks if napkins are still available and adjusts amount accordingly
+    function checkAmount(uint256 amount) internal returns(uint256 checkedAmount){
+        checkedAmount = amount;
+        if (totalSupply_ >= maximumSupply){
+            // yeah there can only 144,000 napkins, sorry about that
+            checkedAmount = 0;
+        } else if (amount + totalSupply_ > maximumSupply){
+            // hand over the remaining stuff
+            checkedAmount = maximumSupply - totalSupply_;
+        } else {
+            checkedAmount = amount;
+        }
+        return checkedAmount;
+    }
+
+    function payOutNapkins(uint256 amount) internal{
         // check for amount and wrap around
         require(amount > 0);
+        // yeah some sanity check
+        require(amount + totalSupply_ <= maximumSupply);
+        // some wrap around check
         require(totalSupply_ +  amount > totalSupply_);
 
         // Increase total supply by amount
@@ -338,7 +368,6 @@ contract SoulToken is ERC20Token{
         balances[msg.sender] += amount;
         // log napkin transfer
         Transfer(this, msg.sender, amount);
-        return amount;
 
     }
 

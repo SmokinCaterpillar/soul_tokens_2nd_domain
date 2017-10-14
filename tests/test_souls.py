@@ -11,6 +11,10 @@ booking_fee = 13*finney
 decimals = 6
 unit = int(1e6)
 
+napkin_unit_price = 10 * finney
+
+dev_supply = 1111 * unit
+
 null_address = '0x0000000000000000000000000000000000000000'
 
 def get_wei(chain, accounts):
@@ -37,9 +41,9 @@ def test_init(chain, accounts):
 
     # Check some initial settings:
     assert soul_token.call().owner() == accounts[0]
-    assert soul_token.call().balanceOf(accounts[0]) == 0
+    assert soul_token.call().balanceOf(accounts[0]) == dev_supply
     assert soul_token.call().balanceOf(accounts[1]) == 0
-    assert soul_token.call().totalSupply() == 0
+    assert soul_token.call().totalSupply() == dev_supply
     assert soul_token.call().name() == 'Soul Napkins'
     assert soul_token.call().symbol() == 'SOUL'
     assert soul_token.call().decimals() == decimals
@@ -102,7 +106,7 @@ def test_buy_soul(chain, accounts):
     assert soul_token.call().soulsForSale() == 1
 
     weis = get_wei(chain, accounts)
-    chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':1*finney}).buySoul(accounts[1]))
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':1*napkin_unit_price}).buySoul(accounts[1]))
     new_weis = get_wei(chain, accounts)
 
     assert soul_token.call().soulIsOwnedBy(accounts[1]) == accounts[2]
@@ -110,13 +114,32 @@ def test_buy_soul(chain, accounts):
     assert soul_token.call().ownsSouls(accounts[2]) == 1
     assert soul_token.call().ownsSouls(accounts[1]) == 0
     assert soul_token.call().balanceOf(accounts[2]) == 2*unit # plus bonus napkin
-    assert soul_token.call().balanceOf(accounts[0]) == 0
+    assert soul_token.call().balanceOf(accounts[0]) == dev_supply
     assert weis[1] < new_weis[1]
     assert weis[2] > new_weis[2]
     assert soul_token.call().soulBookPage(0) == accounts[1]
     assert soul_token.call().soulBookPage(1) == null_address
     assert soul_token.call().soulsForSale() == 0
     assert soul_token.call().soulsSold() == 1
+
+
+def test_soul_can_only_be_bouhgt_once(chain, accounts):
+    provider = chain.provider
+    soul_token, deploy_txn_hash = provider.get_or_deploy_contract(
+        'SoulToken'
+    )
+
+    reason = 'I`m bored'
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 1*finney))
+
+
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':1*napkin_unit_price}).buySoul(accounts[1]))
+
+    with pytest.raises(TransactionFailed):
+        chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':1*napkin_unit_price}).buySoul(accounts[1]))
+
+    with pytest.raises(TransactionFailed):
+        chain.wait.for_receipt(soul_token.transact({'from':accounts[3], 'value':1*napkin_unit_price}).buySoul(accounts[1]))
 
 
 def test_buy_own_soul(chain, accounts):
@@ -132,7 +155,7 @@ def test_buy_own_soul(chain, accounts):
     assert soul_token.call().soulsForSale() == 1
 
     weis = get_wei(chain, accounts)
-    chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':1*finney}).buySoul(accounts[1]))
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':1*napkin_unit_price}).buySoul(accounts[1]))
     new_weis = get_wei(chain, accounts)
 
     assert soul_token.call().soulIsOwnedBy(accounts[1]) == accounts[1]
@@ -163,9 +186,9 @@ def test_buy_multiple_souls(chain, accounts):
     assert soul_token.call().soulBookPage(0) == accounts[1]
     assert soul_token.call().soulsForSale() == 1
 
-    chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':1*finney}).buySoul(accounts[1]))
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':1*napkin_unit_price}).buySoul(accounts[1]))
 
-    assert soul_token.call().totalObol() == booking_fee + int(0.1*finney)
+    assert soul_token.call().totalObol() == booking_fee + int(1*finney)
 
     assert soul_token.call().soulBookPage(0) == accounts[1]
     assert soul_token.call().soulBookPage(1) == null_address
@@ -174,7 +197,7 @@ def test_buy_multiple_souls(chain, accounts):
 
     chain.wait.for_receipt(soul_token.transact({'from':accounts[3], 'value':booking_fee}).sellSoul(reason, 2*finney))
 
-    assert soul_token.call().totalObol() == 2*booking_fee + int(0.1*finney)
+    assert soul_token.call().totalObol() == 2*booking_fee + int(1*finney)
 
     assert soul_token.call().soulBookPage(0) == accounts[1]
     assert soul_token.call().soulBookPage(1) == accounts[3]
@@ -182,9 +205,9 @@ def test_buy_multiple_souls(chain, accounts):
     assert soul_token.call().soulsForSale() == 1
     assert soul_token.call().soulsSold() == 1
 
-    chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':2*finney}).buySoul(accounts[3]))
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':2*napkin_unit_price}).buySoul(accounts[3]))
 
-    assert soul_token.call().totalObol() == 2*booking_fee + int(0.3*finney)
+    assert soul_token.call().totalObol() == 2*booking_fee + int(3*finney)
 
     assert soul_token.call().soulBookPage(0) == accounts[1]
     assert soul_token.call().soulBookPage(1) == accounts[3]
@@ -198,7 +221,7 @@ def test_buy_multiple_souls(chain, accounts):
     assert soul_token.call().ownsSouls(accounts[2]) == 2
     assert soul_token.call().ownsSouls(accounts[1]) == 0
     assert soul_token.call().balanceOf(accounts[2]) == 5*unit # + 2 bonus napkins
-    assert soul_token.call().balanceOf(accounts[0]) == 0
+    assert soul_token.call().balanceOf(accounts[0]) == dev_supply
 
 
 
@@ -213,7 +236,7 @@ def test_buy_soulmore(chain, accounts):
     chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 1*finney))
 
     weis = get_wei(chain, accounts)
-    chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':2*finney}).buySoul(accounts[1]))
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':2*napkin_unit_price}).buySoul(accounts[1]))
     new_weis = get_wei(chain, accounts)
 
     assert soul_token.call().soulIsOwnedBy(accounts[1]) == accounts[2]
@@ -221,7 +244,7 @@ def test_buy_soulmore(chain, accounts):
     assert soul_token.call().ownsSouls(accounts[2]) == 1
     assert soul_token.call().ownsSouls(accounts[1]) == 0
     assert soul_token.call().balanceOf(accounts[2]) == 3*unit # plus bonus napkin
-    assert soul_token.call().balanceOf(accounts[0]) == 0
+    assert soul_token.call().balanceOf(accounts[0]) == dev_supply
     assert weis[1] < new_weis[1]
     assert weis[2] > new_weis[2]
 
@@ -279,7 +302,7 @@ def test_vig(chain, accounts):
     assert weis[3] + booking_fee == new_weis[3]
 
     weis = get_wei(chain, accounts)
-    val = 2*finney
+    val = 2*napkin_unit_price
     obol = val // 10
     chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':val}).buySoul(accounts[1]))
     new_weis = get_wei(chain, accounts)
@@ -289,8 +312,8 @@ def test_vig(chain, accounts):
     assert soul_token.call().ownsSouls(accounts[2]) == 1
     assert soul_token.call().ownsSouls(accounts[1]) == 0
     assert soul_token.call().balanceOf(accounts[2]) == 3*unit  # bonus napkin
-    assert soul_token.call().balanceOf(accounts[0]) == 0
-    assert weis[1] + 2*finney - obol == new_weis[1]
+    assert soul_token.call().balanceOf(accounts[0]) == dev_supply
+    assert weis[1] + 2*napkin_unit_price - obol == new_weis[1]
     assert weis[2] > new_weis[2]
     assert weis[3] + obol == new_weis[3]
 
@@ -327,13 +350,13 @@ def test_buy_soul_errors(chain, accounts):
     with pytest.raises(TransactionFailed):
         chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':1*finney}).buySoul(accounts[0]))
 
-    # fails because obol can only be changed by author
-    with pytest.raises(TransactionFailed):
-        chain.wait.for_receipt(soul_token.transact({'from':accounts[1]}).changeObol(22))
+    # # fails because obol can only be changed by author
+    # with pytest.raises(TransactionFailed):
+    #     chain.wait.for_receipt(soul_token.transact({'from':accounts[1]}).changeObol(22))
 
     # fails because bookingFee can onyl be changed by author
     with pytest.raises(TransactionFailed):
-        chain.wait.for_receipt(soul_token.transact({'from':accounts[1]}).changeObol(22))
+        chain.wait.for_receipt(soul_token.transact({'from':accounts[1]}).changeBookingFee(22))
 
     # fails because internal function
     with pytest.raises(ValueError):
@@ -351,11 +374,11 @@ def test_transferSoul(chain, accounts):
     )
 
     reason = 'I`m bored'
-    rec = chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 1*finney))
+    rec = chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 1*napkin_unit_price))
 
-    chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':1*finney}).buySoul(accounts[1]))
-    chain.wait.for_receipt(soul_token.transact({'from':accounts[3], 'value':booking_fee}).sellSoul(reason, 2*finney))
-    chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':2*finney}).buySoul(accounts[3]))
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':1*napkin_unit_price}).buySoul(accounts[1]))
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[3], 'value':booking_fee}).sellSoul(reason, 2*napkin_unit_price))
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':2*napkin_unit_price}).buySoul(accounts[3]))
 
 
     assert soul_token.call().soulIsOwnedBy(accounts[1]) == accounts[2]
@@ -364,12 +387,12 @@ def test_transferSoul(chain, accounts):
     assert soul_token.call().ownsSouls(accounts[2]) == 2
     assert soul_token.call().ownsSouls(accounts[1]) == 0
     assert soul_token.call().balanceOf(accounts[2]) == 5*unit # with bonus napkins
-    assert soul_token.call().balanceOf(accounts[0]) == 0
+    assert soul_token.call().balanceOf(accounts[0]) == dev_supply
 
     chain.wait.for_receipt(soul_token.transact({'from':accounts[0]}).changeBoat(accounts[5]))
 
     weis = get_wei(chain, accounts)
-    obol = int(0.1*finney)
+    obol = int(1*finney)
     chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':obol}).transferSoul(accounts[0], accounts[1]))
     new_weis = get_wei(chain, accounts)
 
@@ -381,12 +404,12 @@ def test_transferSoul(chain, accounts):
     assert soul_token.call().ownsSouls(accounts[0]) == 1
 
     assert soul_token.call().balanceOf(accounts[2]) == 5*unit # with bonus napkins
-    assert soul_token.call().balanceOf(accounts[0]) == 0
+    assert soul_token.call().balanceOf(accounts[0]) == dev_supply
 
     assert weis[5] + obol == new_weis[5]
 
     weis = get_wei(chain, accounts)
-    obol = int(0.5*finney)
+    obol = int(5*finney)
     chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':obol}).transferSoul(accounts[3], accounts[3]))
     new_weis = get_wei(chain, accounts)
 
@@ -399,7 +422,7 @@ def test_transferSoul(chain, accounts):
     assert soul_token.call().ownsSouls(accounts[3]) == 1
 
     assert soul_token.call().balanceOf(accounts[2]) == 5*unit # bonus napkin
-    assert soul_token.call().balanceOf(accounts[0]) == 0
+    assert soul_token.call().balanceOf(accounts[0]) == dev_supply
 
     assert weis[5] + obol == new_weis[5]
 
@@ -439,14 +462,14 @@ def test_fallback(chain, accounts, web3):
 
     chain.wait.for_receipt(soul_token.transact({'from':accounts[0]}).changeBoat(accounts[5]))
 
-    chain.wait.for_receipt(web3.eth.sendTransaction({'value':10*finney, 'from':accounts[1], 'to': soul_token.address,
+    chain.wait.for_receipt(web3.eth.sendTransaction({'value':10*napkin_unit_price, 'from':accounts[1], 'to': soul_token.address,
                                                      'gas':200000}))
-    chain.wait.for_receipt(web3.eth.sendTransaction({'value':20*finney, 'from':accounts[0], 'to': soul_token.address,
+    chain.wait.for_receipt(web3.eth.sendTransaction({'value':20*napkin_unit_price, 'from':accounts[0], 'to': soul_token.address,
                                                      'gas':200000}))
     new_weis = get_wei(chain, accounts)
 
-    assert weis[5] + 30*finney == new_weis[5]
-    assert soul_token.call().balanceOf(accounts[0]) == 20*unit
+    assert weis[5] + 300*finney == new_weis[5]
+    assert soul_token.call().balanceOf(accounts[0]) == 20*unit + dev_supply
     assert soul_token.call().balanceOf(accounts[1]) == 10*unit
 
 
@@ -460,17 +483,17 @@ def test_token_transfer(chain, accounts):
 
     # buy some tokens
     reason='äää'
-    chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 100*finney))
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 100*napkin_unit_price))
 
-    chain.wait.for_receipt(soul_token.transact({'from':accounts[0], 'value':100*finney}).buySoul(accounts[1]))
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[0], 'value':100*napkin_unit_price}).buySoul(accounts[1]))
 
-    assert soul_token.call().balanceOf(accounts[0]) == int(101*unit)
+    assert soul_token.call().balanceOf(accounts[0]) == int(101*unit) + dev_supply
 
     # transfer the tokens
     chain.wait.for_receipt(soul_token.transact().transfer(accounts[1], int(25*unit)))
 
     # check that transfer worled
-    assert soul_token.call().balanceOf(accounts[0]) == int(76*unit)
+    assert soul_token.call().balanceOf(accounts[0]) == int(76*unit) + dev_supply
     assert soul_token.call().balanceOf(accounts[1]) == int(25*unit)
 
     # approve some future transfers
@@ -482,7 +505,7 @@ def test_token_transfer(chain, accounts):
                                                                                  int(51*unit)))
 
     # there should be no transfer because the amount was too large
-    assert soul_token.call().balanceOf(accounts[0]) == int(76*unit)
+    assert soul_token.call().balanceOf(accounts[0]) == int(76*unit) + dev_supply
     assert soul_token.call().balanceOf(accounts[1]) == int(25*unit)
 
     # this should be allowed
@@ -490,7 +513,7 @@ def test_token_transfer(chain, accounts):
                                                                                  accounts[1],
                                                                                  int(25*unit)))
 
-    assert soul_token.call().balanceOf(accounts[0]) == int(51*unit)
+    assert soul_token.call().balanceOf(accounts[0]) == int(51*unit) + dev_supply
     assert soul_token.call().balanceOf(accounts[1]) == int(50*unit)
     assert soul_token.call().allowance(accounts[0], accounts[2]) == int(25*unit)
 
@@ -499,6 +522,59 @@ def test_token_transfer(chain, accounts):
                                                                                  accounts[1],
                                                                                  int(25*unit)))
 
-    assert soul_token.call().balanceOf(accounts[0]) == int(26*unit)
+    assert soul_token.call().balanceOf(accounts[0]) == int(26*unit) + dev_supply
     assert soul_token.call().balanceOf(accounts[1]) == int(75*unit)
     assert soul_token.call().allowance(accounts[0], accounts[2]) == 0
+
+
+def test_maximum_supply(chain, accounts, web3):
+    provider = chain.provider
+
+    soul_token, deploy_txn_hash2 = provider.get_or_deploy_contract(
+        'SoulToken'
+    )
+
+    reason = 'mooooney'
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason,
+                                                                                                   100*napkin_unit_price))
+
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':100*napkin_unit_price}).buySoul(accounts[1]))
+
+    assert soul_token.call().balanceOf(accounts[2]) == int(101*unit)
+
+    chain.wait.for_receipt(web3.eth.sendTransaction({'value':(143898 - int(dev_supply/unit))*napkin_unit_price,
+                                                     'from':accounts[1], 'to': soul_token.address,
+                                                     'gas':200000}))
+
+    assert soul_token.call().balanceOf(accounts[1]) == int(143898*unit) - dev_supply
+
+    # fails cause not enough supply
+    with pytest.raises(TransactionFailed):
+        chain.wait.for_receipt(web3.eth.sendTransaction({'value':2*napkin_unit_price, 'from':accounts[1], 'to': soul_token.address,
+                                                     'gas':200000}))
+
+
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[3], 'value':booking_fee}).sellSoul(reason,
+                                                                                                   100*napkin_unit_price))
+
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':100*napkin_unit_price}).buySoul(accounts[3]))
+
+    assert soul_token.call().balanceOf(accounts[2]) == int(102*unit)
+
+
+    # fails cause not enough supply
+    with pytest.raises(TransactionFailed):
+        chain.wait.for_receipt(web3.eth.sendTransaction({'value':1, 'from':accounts[1], 'to': soul_token.address,
+                                                     'gas':200000}))
+
+
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[4],
+                                                'value':booking_fee}).sellSoul(reason, 100*napkin_unit_price))
+
+    chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':100*napkin_unit_price}).buySoul(accounts[4]))
+
+    assert soul_token.call().balanceOf(accounts[2]) == int(102*unit)
+
+
+
+
