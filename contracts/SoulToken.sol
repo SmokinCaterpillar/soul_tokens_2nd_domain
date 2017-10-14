@@ -340,7 +340,7 @@ contract SoulToken is ERC20Token{
     }
 
     // checks if napkins are still available and adjusts amount accordingly
-    function checkAmount(uint256 amount) internal returns(uint256 checkedAmount){
+    function checkAmount(uint256 amount) internal constant returns(uint256 checkedAmount){
         checkedAmount = amount;
         if (totalSupply_ >= maximumSupply){
             // yeah there can only 144,000 napkins, sorry about that
