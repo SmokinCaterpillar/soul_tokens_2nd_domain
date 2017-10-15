@@ -15,6 +15,8 @@ napkin_unit_price = 10 * finney
 
 dev_supply = 1111 * unit
 
+total_supply = 144000 * unit
+
 null_address = '0x0000000000000000000000000000000000000000'
 
 def get_wei(chain, accounts):
@@ -42,8 +44,9 @@ def test_init(chain, accounts):
     # Check some initial settings:
     assert soul_token.call().owner() == accounts[0]
     assert soul_token.call().balanceOf(accounts[0]) == dev_supply
+    assert soul_token.call().balanceOf(soul_token.address) == total_supply - dev_supply
     assert soul_token.call().balanceOf(accounts[1]) == 0
-    assert soul_token.call().totalSupply() == dev_supply
+    assert soul_token.call().totalSupply() == total_supply
     assert soul_token.call().name() == 'Soul Napkins'
     assert soul_token.call().symbol() == 'SOUL'
     assert soul_token.call().decimals() == decimals
@@ -115,6 +118,7 @@ def test_buy_soul(chain, accounts):
     assert soul_token.call().ownsSouls(accounts[1]) == 0
     assert soul_token.call().balanceOf(accounts[2]) == int(1.1*unit) # plus bonus napkin
     assert soul_token.call().balanceOf(accounts[0]) == dev_supply
+    assert soul_token.call().balanceOf(soul_token.address) == total_supply - dev_supply - int(1.1*unit)
     assert weis[1] < new_weis[1]
     assert weis[2] > new_weis[2]
     assert soul_token.call().soulBookPage(0) == accounts[1]
@@ -574,6 +578,7 @@ def test_maximum_supply(chain, accounts, web3):
     chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':1000*napkin_unit_price}).buySoul(accounts[4]))
 
     assert soul_token.call().balanceOf(accounts[2]) == int(102*unit)
+    assert soul_token.call().balanceOf(soul_token.address) == 0
 
 
 

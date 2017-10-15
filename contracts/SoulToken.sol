@@ -128,9 +128,9 @@ contract SoulToken is ERC20Token{
     // price per token, 100 napkins per Ether
     uint256 public constant napkinPrice = 10 finney / unit;
 
-    // Maximum number of napkins available
+    // Total number of napkins available
     // 144,000 (get it?)
-    uint256 public constant maximumSupply = 144000*unit;
+    uint256 constant totalSupply_ = 144000 * unit;
 
     // mapping to keep the reason of the soul sale!
     mapping(address => string) reasons;
@@ -156,9 +156,6 @@ contract SoulToken is ERC20Token{
     // small fee to insert soul into soul book
     uint256 public bookingFee;
 
-    // this the maximum of Soul
-    uint256 totalSupply_;
-
     //souls for sale
     uint256 public soulsForSale;
 
@@ -174,12 +171,13 @@ contract SoulToken is ERC20Token{
     function SoulToken() public{
         owner = msg.sender;
         charonsBoat = msg.sender;
-        totalSupply_ = 0;
         // fee for inserting into soulbook, unholy 13 finney:
         bookingFee = 13 finney;
         soulsForSale = 0;
         soulsSold = 0;
         totalObol = 0;
+        // all napkins belong to the contract at first:
+        balances[this] = totalSupply_;
         // 1111 napkins for the dev ;-)
         payOutNapkins(1111 * unit);
     }
@@ -341,16 +339,13 @@ contract SoulToken is ERC20Token{
 
     // checks if napkins are still available and adjusts amount accordingly
     function checkAmount(uint256 amount) internal constant returns(uint256 checkedAmount){
-        checkedAmount = amount;
-        if (totalSupply_ >= maximumSupply){
-            // yeah there can only 144,000 napkins, sorry about that
-            checkedAmount = 0;
-        } else if (amount + totalSupply_ > maximumSupply){
-            // hand over the remaining stuff
-            checkedAmount = maximumSupply - totalSupply_;
+
+        if (amount > balances[this]){
+            checkedAmount = balances[this];
         } else {
             checkedAmount = amount;
         }
+
         return checkedAmount;
     }
 
@@ -359,13 +354,10 @@ contract SoulToken is ERC20Token{
         // check for amount and wrap around
         require(amount > 0);
         // yeah some sanity check
-        require(amount + totalSupply_ <= maximumSupply);
-        // some wrap around check
-        require(totalSupply_ +  amount > totalSupply_);
+        require(amount <= balances[this]);
 
-        // Increase total supply by amount
-        totalSupply_ += amount;
-        // send napkins
+        // send napkins from contract to msg.sender
+        balances[this] -= amount;
         balances[msg.sender] += amount;
         // log napkin transfer
         Transfer(this, msg.sender, amount);
