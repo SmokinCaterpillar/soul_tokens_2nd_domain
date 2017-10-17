@@ -1,5 +1,5 @@
 /*
-* This is the source code of our smart contract SoulToken.
+* This is the source code of the smart contract for the SOUL token, aka Soul Napkins.
 * Copyright 2017 and all rights reserved by the owner of the following Ethereum address:
 * 0x642E238fDf4A3c17B5cAf3Ea8191919fBBfC7f4e
 */
@@ -114,6 +114,7 @@ contract ERC20Token is ERC20Interface{
 }
 
 
+// Token implementation that allows selling of souls and distribution of napkins
 contract SoulToken is ERC20Token{
 
     // The three letter symbol of token
@@ -147,22 +148,22 @@ contract SoulToken is ERC20Token{
     // who owns a particular soul
     mapping(address => address) ownedBy;
 
-    // number of souls owned by a someone
+    // number of souls owned by someone
     mapping(address => uint256) soulsOwned;
 
-    // book of souls
+    // book of souls, listing all souls on sale and sold
     mapping(uint256 => address) soulBook;
 
     // owner of the contract
     address public owner;
 
-    // Address where souls obol is due to
+    // Address where soul obol is due to
     address public charonsBoat;
 
     // small fee to insert soul into soul book
     uint256 public bookingFee;
 
-    //souls for sale
+    // souls for sale
     uint256 public soulsForSale;
 
     // souls already sold
@@ -177,7 +178,7 @@ contract SoulToken is ERC20Token{
     function SoulToken() public{
         owner = msg.sender;
         charonsBoat = msg.sender;
-        // fee for inserting into soulbook, unholy 13 finney:
+        // fee for inserting into soulbook, unholy 13 finney
         bookingFee = 13 finney;
         soulsForSale = 0;
         soulsSold = 0;
@@ -188,7 +189,7 @@ contract SoulToken is ERC20Token{
         payOutNapkins(1111 * unit);
     }
 
-    // fallback function, Charon sell napkins as merchandise!
+    // fallback function, Charon sells napkins as merchandise!
     function () public payable {
         uint256 amount;
         uint256 checkedAmount;
@@ -197,23 +198,19 @@ contract SoulToken is ERC20Token{
         // give away some napkins in return proportional to value
         amount = msg.value / napkinPrice;
         checkedAmount = checkAmount(amount);
-        // only payout napkins if there is the apporpriate amount available
+        // only payout napkins if there is the appropriate amount available
         // else throw
         require(amount == checkedAmount);
         payOutNapkins(checkedAmount);
     }
 
-//    function changeObol(uint8 _obol) public {
-//        require(msg.sender == owner);
-//        obol = _obol;
-//    }
-
+    // allows changing of the booking fee, note obol and token price are fix and cannot change
     function changeBookingFee(uint256 fee) public {
         require(msg.sender == owner);
         bookingFee = fee;
     }
 
-    // changes Charons boat, i.e. the address where the obol is paid to
+    // changes Charon's boat, i.e. the address where the obol is paid to
     function changeBoat(address new_boat_) public{
         require(msg.sender == owner);
         charonsBoat = new_boat_;
@@ -224,7 +221,7 @@ contract SoulToken is ERC20Token{
         return totalSupply_;
     }
 
-    // returns the reason for the selling
+    // returns the reason for the selling of one's soul
     function soldSoulBecause(address noSoulMate) public constant returns(string){
         return reasons[noSoulMate];
     }
@@ -239,10 +236,12 @@ contract SoulToken is ERC20Token{
         return soulsOwned[soulOwner];
     }
 
+    // returns price of a soul
     function soldSoulFor(address noSoulMate) public constant returns(uint256){
         return soulPrices[noSoulMate];
     }
 
+    // returns the nth entry in the soul book
     function soulBookPage(uint256 page) public constant returns(address){
         return soulBook[page];
     }
@@ -290,12 +289,12 @@ contract SoulToken is ERC20Token{
         // you gotta pay Charon
         require(charonsObol > 0);
 
-        // check for Wrap around
+        // check for wrap around
         require(soulsOwned[msg.sender] + 1 > soulsOwned[msg.sender]);
 
         // pay Charon
         payCharon(charonsObol);
-        // pay the soul owner:
+        // pay the soul owner
         noSoulMate.transfer(msg.value - charonsObol);
 
         // Update the soul stats
@@ -307,7 +306,7 @@ contract SoulToken is ERC20Token{
         // log the transfer
         SoulTransfer(noSoulMate, msg.sender);
 
-        // and give away napkins proportional to msg value plus 1 bonus napkin ;-)
+        // and give away napkins proportional to obol plus 1 bonus napkin ;-)
         amount = charonsObol / napkinPrice + unit;
         amount = checkAmount(amount);
         if (amount > 0){
@@ -338,6 +337,7 @@ contract SoulToken is ERC20Token{
         SoulTransfer(msg.sender, _to);
     }
 
+    // logs and pays charon fees
     function payCharon(uint256 obolValue) internal{
         totalObol += obolValue;
         charonsBoat.transfer(obolValue);
