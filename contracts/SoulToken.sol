@@ -1,3 +1,9 @@
+/*
+* This is the source code of our smart contract SoulToken.
+* Copyright 2017 and all rights reserved by the owner of the following Ethereum address:
+* 0x642E238fDf4A3c17B5cAf3Ea8191919fBBfC7f4e
+*/
+
 pragma solidity ^0.4.17;
 
 // ERC Token standard #20 Interface
@@ -361,8 +367,6 @@ contract SoulToken is ERC20Token{
         balances[msg.sender] += amount;
         // log napkin transfer
         Transfer(this, msg.sender, amount);
-
     }
-
 
 }
