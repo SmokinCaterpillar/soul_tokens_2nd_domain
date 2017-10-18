@@ -123,16 +123,18 @@ function listenForSoulSellsClicks() {
 
       var rLength = reason.length;
       if (onSale){
-          alert('You did put your soul already on sale! Sneaky, but sorry, you can sell your soul only once!')
+          alert('You did put your soul already on sale! Sneaky, but sorry, you can sell your soul only once!');
       } else if (rLength === 0){
           alert('C`mon you need a reason to sell your soul!');
       } else if(rLength > 333) {
-          alert('Your reason is too long with ' + rLength + ' characters, please use 333 or less! It must fit on a napkin!')
+          alert('Your reason is too long with ' + rLength + ' characters, please use 333 or less! It must fit on a napkin!');
+      } else if(inWei <= 10){
+          alert('Your soul has to have a price, you cannot give it away for free or even pay for giving it away. What is wrong with you?');
       } else{
           var gas = 200000 + 1000 * rLength;
           soulToken.sellSoul(reason, inWei, {from: web3.eth.coinbase, value:bookingFeeInWei, gas: gas}).then(function (txHash) {
               console.log('Transaction sent');
-              console.dir(txHash)
+              console.dir(txHash);
           })
       }
   })
