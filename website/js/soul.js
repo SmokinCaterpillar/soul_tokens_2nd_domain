@@ -23,9 +23,9 @@ var BigNumber = require('bignumber.js');
 
 // ABI and addresses of both contracts
 const contractAddress = '0x0f939c382e887077c4e6019320c7cb72be0eed1c';
-const contractAbi = [{"constant":true,"inputs":[{"name":"noSoulMate","type":"address"}],"name":"soulIsOwnedBy","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_amount","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"soulOwner","type":"address"}],"name":"ownsSouls","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"soulsForSale","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"soulsSold","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalObol","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"napkinPrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"charonsBoat","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"fee","type":"uint256"}],"name":"changeBookingFee","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"noSoulMate","type":"address"}],"name":"transferSoul","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"bookingFee","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"noSoulMate","type":"address"}],"name":"buySoul","outputs":[{"name":"amount","type":"uint256"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"noSoulMate","type":"address"}],"name":"soldSoulBecause","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"unit","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"page","type":"uint256"}],"name":"soulBookPage","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"reason","type":"string"},{"name":"price","type":"uint256"}],"name":"sellSoul","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"noSoulMate","type":"address"}],"name":"soldSoulFor","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"new_boat_","type":"address"}],"name":"changeBoat","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"obol","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"}],"name":"SoulTransfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":true,"name":"_spender","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Approval","type":"event"}]
+const contractAbi = [{"constant":true,"inputs":[{"name":"noSoulMate","type":"address"}],"name":"soulIsOwnedBy","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_amount","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"soulOwner","type":"address"}],"name":"ownsSouls","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"soulsForSale","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"soulsSold","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalObol","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"napkinPrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"charonsBoat","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"fee","type":"uint256"}],"name":"changeBookingFee","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"noSoulMate","type":"address"}],"name":"transferSoul","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"bookingFee","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"noSoulMate","type":"address"}],"name":"buySoul","outputs":[{"name":"amount","type":"uint256"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"noSoulMate","type":"address"}],"name":"soldSoulBecause","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"unit","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"page","type":"uint256"}],"name":"soulBookPage","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"reason","type":"string"},{"name":"price","type":"uint256"}],"name":"sellSoul","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"noSoulMate","type":"address"}],"name":"soldSoulFor","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"new_boat_","type":"address"}],"name":"changeBoat","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"obol","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"}],"name":"SoulTransfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":true,"name":"_spender","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Approval","type":"event"}];
 
-const nullAddress = "0x0000000000000000000000000000000000000000"
+const nullAddress = "0x0000000000000000000000000000000000000000";
 
 var soulToken;  // global reference to impeachment contract
 var bookingFee = 0.013;
@@ -126,7 +126,7 @@ function updateTotalSupply(){
         charonsNapkins = results[0];
         console.log('Charons napkins ' + napkins);
         charonsNapkins = new BigNumber(charonsNapkins);
-        napkins = totalSupply.minus(charonsNapkins).dividedBy(unit)
+        napkins = totalSupply.minus(charonsNapkins).dividedBy(unit);
         napkins = round(napkins, 0);
         var htmlText = "In total Charon has distributed " + napkins + " napkins out of all available 144000.";
 
@@ -164,19 +164,19 @@ function updateBalances(){
             souls = results[0];
             console.log('souls ' + souls);
 
-            htmlText = "You own "+ souls + " soul(s) and " + napkins + " SOUL tokens, i.e. napkins."
+            htmlText = "You own "+ souls + " soul(s) and " + napkins + " SOUL tokens, i.e. napkins.";
             document.getElementById('balance').innerHTML = htmlText
         });
     }).catch(function (error) {
         console.error(error);
         console.log('ERROR no it balance found');
-        htmlText = "Please, unlock your MetaMask wallet to see your soul and napkin balances."
+        htmlText = "Please, unlock your MetaMask wallet to see your soul and napkin balances.";
         document.getElementById('balance').innerHTML = htmlText
     });
 }
 
 
-function getWrittenNapkingSold(index, soul, reason, priceInEth, owner){
+function getWrittenNapkinSold(index, soul, reason, priceInEth, owner){
     var half = soul.length / 2;
     var soul1Half = soul.substr(0, half);
     var soul2Half = soul.substr(half + 1);
@@ -205,7 +205,7 @@ function getWrittenNapkingSold(index, soul, reason, priceInEth, owner){
     return htmlText
 }
 
-function getWrittenNapkingForSale(index, soul, reason, priceInEth){
+function getWrittenNapkinForSale(index, soul, reason, priceInEth){
     var half = soul.length / 2;
     var soul1Half = soul.substr(0, half);
     var soul2Half = soul.substr(half + 1);
@@ -244,11 +244,11 @@ function getSoulBook(page){
             soulsSold = results[0];
             console.log('soulsSold ' + soulsSold);
 
-            htmlText = "<mark>" + soulsForSale + " Soul(s) for sale and " + soulsSold + " soul(s) sold! " +
-                "Just click on one of the napkins to purchase the soul! After your purchase, " +
+            htmlText = "<mark>" + soulsForSale + " soul(s) for sale and " + soulsSold + " soul(s) sold. " +
+                "Just click on one of the napkins to purchase the soul. After your purchase, " +
                 "wait a couple of minutes until your transaction is mined into the Blockchain and refresh this website " +
-                "to see that you are the new owner of that soul.</mark>"
-            document.getElementById('status').innerHTML = htmlText
+                "to see that you are the new owner of that soul.</mark>";
+            document.getElementById('status').innerHTML = htmlText;
 
             totalSouls  = Number(soulsSold) + Number(soulsForSale);
             totalPages = Math.ceil(totalSouls / soulsPerPage);
@@ -268,7 +268,7 @@ function getSoulBook(page){
 
         });
     });
-};
+}
 
 
 function lookUpSouls(page, totalSouls) {
@@ -276,7 +276,7 @@ function lookUpSouls(page, totalSouls) {
     var start = Math.max(0, end - soulsPerPage);
     console.log('Looking up souls from idx ' + start + ' to idx ' + end);
     for (var idx = start; idx < end; idx++) {
-        console.log('Looking up soul idx ' + idx)
+        console.log('Looking up soul idx ' + idx);
         loadIndividualSoul(idx)
     }
 }
@@ -292,7 +292,7 @@ document.querySelector('body').addEventListener('click', function(event) {
 
         var soulPrice = priceDict[key];
 
-        console.log("Buying soul " + key + " for " + soulPrice + " Wei")
+        console.log("Buying soul " + key + " for " + soulPrice + " Wei");
 
         soulToken.buySoul(key, {from: web3.eth.coinbase, value:soulPrice, gas: 200000}).then(function (txHash) {
             console.log('Transaction sent');
@@ -334,14 +334,14 @@ function loadIndividualSoul(soulIndex){
 
         soulToken.soldSoulBecause(soul).then(function (results) {
             reason = results[0];
-            reason = xss_prevention(reason)
+            reason = xss_prevention(reason);
             console.log('Found reason ' + reason);
 
             if (reason.length > 333){
                 reason = reason.substr(0, 333) +"...";
             }
             if (reason.length > 111){
-                reason =  reason
+                reason = reason
             } else {
                 reason = "<br>" + reason
             }
@@ -360,9 +360,9 @@ function loadIndividualSoul(soulIndex){
 
                     if (owner === nullAddress) {
                         priceDict[soul] = price;
-                        htmlText = getWrittenNapkingForSale(soulIndex + 1, soul, reason, priceInEth);
+                        htmlText = getWrittenNapkinForSale(soulIndex + 1, soul, reason, priceInEth);
                     } else {
-                        htmlText = getWrittenNapkingSold(soulIndex + 1, soul, reason, priceInEth, owner);
+                        htmlText = getWrittenNapkinSold(soulIndex + 1, soul, reason, priceInEth, owner);
                     }
                     document.getElementById('soulBook').innerHTML += htmlText;
                 });
@@ -385,7 +385,7 @@ window.addEventListener('load', function() {
       startApp();
   } else {
       console.log('You need a Web3 plugin like MetaMask for your browser to trade souls on this website.\n' +
-          'Visit https://metamask.io/ to install the plugin.')
+          'Visit https://metamask.io/ to install the plugin.');
       startAppNoWeb3();
   }
 });
