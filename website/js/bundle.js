@@ -40,6 +40,8 @@ var onSale = false;
 
 var priceDict = {};
 
+var metamask_info = "Please, install MetaMask (https://metamask.io/) to use this button!"
+
 function startApp() {
     // Initialize the contracts
     const eth = new Eth(web3.currentProvider);
@@ -62,6 +64,24 @@ function startApp() {
     console.log('App started.')
 }
 
+
+function startAppNoWeb3(){
+    var button = document.getElementById('nextPage');
+    button.addEventListener('click', function() {
+        alert(metamask_info)
+    });
+    var button = document.getElementById('previousPage');
+    button.addEventListener('click', function() {
+        alert(metamask_info)
+    });
+    var button = document.getElementById('sellSoulButton');
+    button.addEventListener('click', function() {
+        alert(metamask_info)
+    });
+
+}
+
+
 function listenForNextPageClicks(){
     var button = document.getElementById('nextPage');
     button.addEventListener('click', function() {
@@ -69,12 +89,14 @@ function listenForNextPageClicks(){
     });
 }
 
+
 function listenForPreviousPageClicks(){
     var button = document.getElementById('previousPage');
     button.addEventListener('click', function() {
         turnPage(-1)
     });
 }
+
 
 function turnPage(howMany){
     currentPage += howMany;
@@ -86,7 +108,6 @@ function turnPage(howMany){
     }, 200);
 
 }
-
 
 
 function listenForSoulSellsClicks() {
@@ -151,6 +172,7 @@ function checkOnSale(){
     });
 }
 
+
 function updateBalances(){
 
     var napkins;
@@ -205,6 +227,7 @@ function getWrittenNapkinSold(index, soul, reason, priceInEth, owner){
                 "</div>";
     return htmlText
 }
+
 
 function getWrittenNapkinForSale(index, soul, reason, priceInEth){
     var half = soul.length / 2;
@@ -375,8 +398,6 @@ function loadIndividualSoul(soulIndex){
 }
 
 
-
-
 window.addEventListener('load', function() {
 
   // Check if Web3 has been injected by MetaMask:
@@ -390,6 +411,7 @@ window.addEventListener('load', function() {
       startAppNoWeb3();
   }
 });
+
 
 console.log('Soul Script loaded.');
 },{"bignumber.js":2,"ethjs-contract":6,"ethjs-query":9}],2:[function(require,module,exports){
