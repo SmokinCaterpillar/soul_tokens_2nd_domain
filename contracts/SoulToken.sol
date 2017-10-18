@@ -160,7 +160,7 @@ contract SoulToken is ERC20Token{
     // Address where soul obol is due to
     address public charonsBoat;
 
-    // small fee to insert soul into soul book
+    // small fee to insert soul into soulbook
     uint256 public bookingFee;
 
     // souls for sale
@@ -193,14 +193,15 @@ contract SoulToken is ERC20Token{
     function () public payable {
         uint256 amount;
         uint256 checkedAmount;
-        // forward money to Charon
-        payCharon(msg.value);
         // give away some napkins in return proportional to value
         amount = msg.value / napkinPrice;
         checkedAmount = checkAmount(amount);
         // only payout napkins if there is the appropriate amount available
         // else throw
         require(amount == checkedAmount);
+        // forward money to Charon
+        payCharon(msg.value);
+        // finally payout napkins
         payOutNapkins(checkedAmount);
     }
 
@@ -248,6 +249,7 @@ contract SoulToken is ERC20Token{
 
     // sells your soul for a given price and a given reason!
     function sellSoul(string reason, uint256 price) public payable{
+        uint256 charonsObol;
         string storage has_reason = reasons[msg.sender];
 
         // require that user gives a reason
@@ -255,6 +257,10 @@ contract SoulToken is ERC20Token{
 
         // require to pay bookingFee
         require(msg.value >= bookingFee);
+
+        // you cannot give away your soul for free, at least Charon wants some share
+        charonsObol = price / obol;
+        require(charonsObol > 0);
 
         // assert has not sold her or his soul, yet
         require(bytes(has_reason).length == 0);
@@ -283,11 +289,10 @@ contract SoulToken is ERC20Token{
         price = soulPrices[noSoulMate];
         // Soul must be for sale
         require(price > 0);
+        require(bytes(reasons[noSoulMate]).length > 0);
         // Msg sender needs to pay the soul price
         require(msg.value >= price);
         charonsObol = msg.value / obol;
-        // you gotta pay Charon
-        require(charonsObol > 0);
 
         // check for wrap around
         require(soulsOwned[msg.sender] + 1 > soulsOwned[msg.sender]);
@@ -321,10 +326,11 @@ contract SoulToken is ERC20Token{
     function transferSoul(address _to, address noSoulMate) public payable{
         uint256 charonsObol;
 
-        charonsObol = soulPrices[noSoulMate] / obol;
-
+        // require correct ownership
         require(ownedBy[noSoulMate] == msg.sender);
         require(soulsOwned[_to] + 1 > soulsOwned[_to]);
+        // require transfer fee is payed again
+        charonsObol = soulPrices[noSoulMate] / obol;
         require(msg.value >= charonsObol);
         // pay Charon
         payCharon(msg.value);

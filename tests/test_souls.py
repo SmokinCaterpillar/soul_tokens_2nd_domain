@@ -340,6 +340,18 @@ def test_buy_soul_errors(chain, accounts):
     reason = 'I`m bored'
     chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee}).sellSoul(reason, 1*finney))
 
+    # fails because price cannot be 0
+    with pytest.raises(TransactionFailed):
+        chain.wait.for_receipt(soul_token.transact({'from':accounts[3], 'value':booking_fee}).sellSoul(reason, 0))
+
+    # fails because charon wants some share
+    with pytest.raises(TransactionFailed):
+        chain.wait.for_receipt(soul_token.transact({'from':accounts[3], 'value':booking_fee}).sellSoul(reason, 9))
+
+    # fails because there must be a reason
+    with pytest.raises(TransactionFailed):
+        chain.wait.for_receipt(soul_token.transact({'from':accounts[3], 'value':booking_fee}).sellSoul('', 22))
+
     # fails because your offer is not high enough
     with pytest.raises(TransactionFailed):
         chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':int(0.9*finney)}).buySoul(accounts[1]))
@@ -350,9 +362,9 @@ def test_buy_soul_errors(chain, accounts):
     with pytest.raises(TransactionFailed):
         chain.wait.for_receipt(soul_token.transact({'from':accounts[0], 'value':1*finney}).buySoul(accounts[1]))
 
-    # fails because sould is not for sale
+    # fails because soul is not for sale
     with pytest.raises(TransactionFailed):
-        chain.wait.for_receipt(soul_token.transact({'from':accounts[2], 'value':1*finney}).buySoul(accounts[0]))
+        chain.wait.for_receipt(soul_token.transact({'from':accounts[4], 'value':1*finney}).buySoul(accounts[0]))
 
     # # fails because obol can only be changed by author
     # with pytest.raises(TransactionFailed):
