@@ -1,7 +1,7 @@
 /*
 * This is the source code of the smart contract for the SOUL token, aka Soul Napkins.
 * Copyright 2017 and all rights reserved by the owner of the following Ethereum address:
-* 0x642E238fDf4A3c17B5cAf3Ea8191919fBBfC7f4e
+* 0x10E44C6bc685c4E4eABda326c211561d5367EEec
 */
 
 pragma solidity ^0.4.17;
