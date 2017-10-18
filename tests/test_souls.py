@@ -538,6 +538,10 @@ def test_token_transfer(chain, accounts):
 
     assert soul_token.call().balanceOf(accounts[0]) == int(11*unit) + dev_supply
 
+    # does nothing because of insufficient funds
+    chain.wait.for_receipt(soul_token.transact().transfer(accounts[1], int(19925*unit)))
+    assert soul_token.call().balanceOf(accounts[0]) == int(11*unit) + dev_supply
+
     # transfer the tokens
     chain.wait.for_receipt(soul_token.transact().transfer(accounts[1], int(25*unit)))
 

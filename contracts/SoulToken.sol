@@ -205,16 +205,16 @@ contract SoulToken is ERC20Token{
         payOutNapkins(checkedAmount);
     }
 
-    // allows changing of the booking fee, note obol and token price are fix and cannot change
+    // allows changing of the booking fee, note obol and token price are fixed and cannot change
     function changeBookingFee(uint256 fee) public {
         require(msg.sender == owner);
         bookingFee = fee;
     }
 
     // changes Charon's boat, i.e. the address where the obol is paid to
-    function changeBoat(address new_boat_) public{
+    function changeBoat(address newBoat) public{
         require(msg.sender == owner);
-        charonsBoat = new_boat_;
+        charonsBoat = newBoat;
     }
 
     // total number of napkins distributed by Charon
@@ -242,7 +242,7 @@ contract SoulToken is ERC20Token{
         return soulPrices[noSoulMate];
     }
 
-    // returns the nth entry in the soul book
+    // returns the nth entry in the soulbook
     function soulBookPage(uint256 page) public constant returns(address){
         return soulBook[page];
     }
@@ -264,6 +264,7 @@ contract SoulToken is ERC20Token{
 
         // assert has not sold her or his soul, yet
         require(bytes(has_reason).length == 0);
+        require(soulPrices[msg.sender] == 0);
         require(ownedBy[msg.sender] == address(0));
 
         // pay book keeping fee
