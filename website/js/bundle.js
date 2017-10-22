@@ -133,7 +133,7 @@ function listenForSoulSellsClicks() {
       } else{
           var gas = 200000 + 1000 * rLength;
           var account = web3.eth.coinbase;
-          if (account === null) {
+          if (account === null || account === nullAddress) {
               alert("Please, unlock your MetaMask wallet, refresh this website, and try again.");
           } else {
               console.log('Buying with account ' + account);
@@ -331,7 +331,7 @@ document.querySelector('body').addEventListener('click', function(event) {
 
         console.log("Buying soul " + key + " for " + soulPrice + " Wei");
         var account = web3.eth.coinbase;
-        if (account === null) {
+        if (account === null || account === nullAddress) {
            alert("Please, unlock your MetaMask wallet, refresh this website, and try again.");
         } else {
 
