@@ -29,7 +29,7 @@ const contractAbi = [{"constant":true,"inputs":[{"name":"noSoulMate","type":"add
 const nullAddress = "0x0000000000000000000000000000000000000000";
 
 var soulToken;  // global reference to impeachment contract
-var bookingFee = 0.013;
+var bookingFee = 0.003;
 var unit = 1000000;
 var totalSupply = new BigNumber(144000 * unit);
 
