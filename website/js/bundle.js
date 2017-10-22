@@ -132,10 +132,21 @@ function listenForSoulSellsClicks() {
           alert('Your soul has to have a price, you cannot give it away for free or even pay for giving it away. What is wrong with you?');
       } else{
           var gas = 200000 + 1000 * rLength;
-          soulToken.sellSoul(reason, inWei, {from: web3.eth.coinbase, value:bookingFeeInWei, gas: gas}).then(function (txHash) {
-              console.log('Transaction sent');
-              console.dir(txHash);
-          })
+          var account = web3.eth.coinbase;
+          if (account === null) {
+              alert("Please, unlock your MetaMask wallet, refresh this website, and try again.");
+          } else {
+              console.log('Buying with account ' + account);
+              soulToken.sellSoul(reason, inWei, {
+                  from: account,
+                  value: bookingFeeInWei,
+                  gas: gas
+              }).then(function (txHash) {
+                  console.log('Transaction sent');
+                  console.dir(txHash);
+              });
+
+          }
       }
   })
 }
@@ -319,14 +330,23 @@ document.querySelector('body').addEventListener('click', function(event) {
         var soulPrice = priceDict[key];
 
         console.log("Buying soul " + key + " for " + soulPrice + " Wei");
+        var account = web3.eth.coinbase;
+        if (account === null) {
+           alert("Please, unlock your MetaMask wallet, refresh this website, and try again.");
+        } else {
 
-        soulToken.buySoul(key, {from: web3.eth.coinbase, value:soulPrice, gas: 200000}).then(function (txHash) {
-            console.log('Transaction sent');
-            console.dir(txHash)
-        }).catch(function (error) {
-            console.log(error);
-            alert("Please, unlock your MetaMask wallet, refresh this website, and try again.");
-        })
+            console.log('Buying with account ' + account);
+
+            soulToken.buySoul(key, {
+                from: account,
+                value: soulPrice,
+                gas: 200000
+            }).then(function (txHash) {
+                console.log('Transaction sent');
+                console.dir(txHash)
+            });
+
+        }
     }
 });
 
