@@ -36,6 +36,11 @@
       margin-left: auto;
 }
 
+.pointy {
+    cursor: pointer;
+    font-weight: 300;
+}
+
 .faq {
     cursor: pointer;
     font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
