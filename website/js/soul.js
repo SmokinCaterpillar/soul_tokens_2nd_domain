@@ -21,6 +21,8 @@ var Eth = require('ethjs-query');
 var EthContract = require('ethjs-contract');
 var BigNumber = require('bignumber.js');
 
+var Web3 = require('web3');
+
 // ABI and addresses of both contracts
 const contractAddress = '0x5bF554632a059aE0537a3EEb20Aced49348B8F99';
 const contractAbi = [{"constant":true,"inputs":[{"name":"noSoulMate","type":"address"}],"name":"soulIsOwnedBy","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_amount","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"soulOwner","type":"address"}],"name":"ownsSouls","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"soulsForSale","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"soulsSold","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalObol","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"napkinPrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"charonsBoat","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"fee","type":"uint256"}],"name":"changeBookingFee","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"noSoulMate","type":"address"}],"name":"transferSoul","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"bookingFee","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"noSoulMate","type":"address"}],"name":"buySoul","outputs":[{"name":"amount","type":"uint256"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"noSoulMate","type":"address"}],"name":"soldSoulBecause","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"unit","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"page","type":"uint256"}],"name":"soulBookPage","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"reason","type":"string"},{"name":"price","type":"uint256"}],"name":"sellSoul","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"noSoulMate","type":"address"}],"name":"soldSoulFor","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"newBoat","type":"address"}],"name":"changeBoat","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"obol","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"}],"name":"SoulTransfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":true,"name":"_spender","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Approval","type":"event"}];
@@ -39,15 +41,23 @@ var onSale = false;
 
 var priceDict = {};
 
-var metamask_info = "Please, install MetaMask (https://metamask.io/) to use this button!"
+var metamask_info = "Please, install MetaMask (https://metamask.io/), the Ethereum browser plugin, to buy or sell souls!";
 
-function startApp() {
-    // Initialize the contracts
+var withMeta = false;
+
+function createContract(){
     const eth = new Eth(web3.currentProvider);
     const contract = new EthContract(eth);
 
     const SoulToken = contract(contractAbi);
     soulToken = SoulToken.at(contractAddress);
+}
+
+function startApp() {
+    // Initialize the contracts
+    createContract();
+    withMeta = true;
+
 
     // Event Listener for buying Impeachment Tokens
     listenForSoulSellsClicks();
@@ -65,18 +75,28 @@ function startApp() {
 
 
 function startAppNoWeb3(){
-    var button = document.getElementById('nextPage');
-    button.addEventListener('click', function() {
-        alert(metamask_info)
-    });
-    var button = document.getElementById('previousPage');
-    button.addEventListener('click', function() {
-        alert(metamask_info)
-    });
+    // var button = document.getElementById('nextPage');
+    // button.addEventListener('click', function() {
+    //     alert(metamask_info)
+    // });
+    // var button = document.getElementById('previousPage');
+    // button.addEventListener('click', function() {
+    //     alert(metamask_info)
+    // });
+    createContract();
+
     var button = document.getElementById('sellSoulButton');
     button.addEventListener('click', function() {
         alert(metamask_info)
     });
+
+    // Event Listener for buying Impeachment Tokens
+    listenForNextPageClicks();
+    listenForPreviousPageClicks();
+
+    // Update total supply and soulbook
+    updateTotalSupply();
+    getSoulBook(-1);
 
 }
 
@@ -326,25 +346,30 @@ document.querySelector('body').addEventListener('click', function(event) {
     if (key in priceDict) {
         console.log("Buy button clicked!");
 
-        var soulPrice = priceDict[key];
+        if (withMeta) {
 
-        console.log("Buying soul " + key + " for " + soulPrice + " Wei");
-        var account = web3.eth.coinbase;
-        if (account === null || account === nullAddress) {
-           alert("Please, unlock your MetaMask wallet, refresh this website, and try again.");
+            var soulPrice = priceDict[key];
+
+            console.log("Buying soul " + key + " for " + soulPrice + " Wei");
+            var account = web3.eth.coinbase;
+            if (account === null || account === nullAddress) {
+                alert("Please, unlock your MetaMask wallet, refresh this website, and try again.");
+            } else {
+
+                console.log('Buying with account ' + account);
+
+                soulToken.buySoul(key, {
+                    from: account,
+                    value: soulPrice,
+                    gas: 200000
+                }).then(function (txHash) {
+                    console.log('Transaction sent');
+                    console.dir(txHash)
+                });
+
+            }
         } else {
-
-            console.log('Buying with account ' + account);
-
-            soulToken.buySoul(key, {
-                from: account,
-                value: soulPrice,
-                gas: 200000
-            }).then(function (txHash) {
-                console.log('Transaction sent');
-                console.dir(txHash)
-            });
-
+            alert(metamask_info);
         }
     }
 });
@@ -429,6 +454,7 @@ window.addEventListener('load', function() {
   } else {
       console.log('You need a Web3 plugin like MetaMask for your browser to trade souls on this website.\n' +
           'Visit https://metamask.io/ to install the plugin.');
+      web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/a3QVb3vG9t6bM8lE4mC3'))
       startAppNoWeb3();
   }
 });
