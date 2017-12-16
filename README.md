@@ -1,8 +1,8 @@
 # SoulNapkins and Soul Selling Ethereum Solidty Contract
 
 This is the git repository for the project hosted on
-[www.soulnapkins.com](www.soulnapkins.com) and
-[www.sell-your-soul.com](www.sell-your-soul.com).
+[www.soulnapkins.com](https://www.soulnapkins.com) and
+[www.sell-your-soul.com](https://www.sell-your-soul.com).
 
 
 ## Development notes
