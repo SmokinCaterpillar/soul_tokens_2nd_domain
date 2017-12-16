@@ -35,3 +35,8 @@ bundle.js via `browserify js/soul.js -o js/bundle.js`
 Note that there should be no development in bunlde.js, all changes should be done to
 soul.js, and after each change `browserify js/soul.js -o js/bundle.js` needs to be
 called to create a new bundle.
+
+
+### Copyright
+
+Copyright 2017 Robert Meyer, all rights reserved!
