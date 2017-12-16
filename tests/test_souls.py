@@ -1,23 +1,18 @@
 from ethereum.tester import TransactionFailed
 from ethereum.exceptions import InvalidTransaction
 import pytest
-import time
 
 ether = int(1e18)
 finney = int(ether/1000)
 vig = 10
 booking_fee = 13*finney
-
 decimals = 6
 unit = int(1e6)
-
 napkin_unit_price = 10 * finney
-
 dev_supply = 1111 * unit
-
 total_supply = 144000 * unit
-
 null_address = '0x0000000000000000000000000000000000000000'
+
 
 def get_wei(chain, accounts):
     """ Returns the wei for each address in `accounts`
@@ -79,7 +74,6 @@ def test_sell_soul_fails_low_fee(chain, accounts):
     reason = 'I`m bored äöÜ'
     with pytest.raises(TransactionFailed):
         chain.wait.for_receipt(soul_token.transact({'from':accounts[1], 'value':booking_fee - 1}).sellSoul(reason, 100))
-
 
 
 def test_twice_sell_soul_fails(chain, accounts):
@@ -226,8 +220,6 @@ def test_buy_multiple_souls(chain, accounts):
     assert soul_token.call().ownsSouls(accounts[1]) == 0
     assert soul_token.call().balanceOf(accounts[2]) == int(2.3*unit) # + 2 bonus napkins
     assert soul_token.call().balanceOf(accounts[0]) == dev_supply
-
-
 
 
 def test_buy_soulmore(chain, accounts):
@@ -522,7 +514,6 @@ def test_fallback(chain, accounts, web3):
     assert soul_token.call().balanceOf(accounts[1]) == 10*unit
 
 
-
 def test_token_transfer(chain, accounts):
     provider = chain.provider
 
@@ -628,7 +619,4 @@ def test_maximum_supply(chain, accounts, web3):
 
     assert soul_token.call().balanceOf(accounts[2]) == int(102*unit)
     assert soul_token.call().balanceOf(soul_token.address) == 0
-
-
-
 
