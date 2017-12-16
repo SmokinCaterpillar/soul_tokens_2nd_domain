@@ -75,9 +75,11 @@ genesis.json
 # pytest
 .cache/
 
-# othres
+# others
 downloads
 
+# pycharm
+.idea
 
 # html
 bower_components
