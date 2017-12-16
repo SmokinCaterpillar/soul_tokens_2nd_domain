@@ -1,14 +1,15 @@
 # SoulNapkins and Soul Selling Ethereum Solidty Contract
 
 This is the git repository for the project hosted on
-`www.sell-your-soul.com`.
+[www.soulnapkins.com](www.soulnapkins.com) and
+[www.sell-your-soul.com](www.sell-your-soul.com).
 
 
+## Development notes
 
+### Soul Token Contract and Tests
 
-## Soul Token Contract and Tests
-
-1. To run the tests please install `https://github.com/pipermerriam/populus`
+1. To run the tests please install the amazing testing framework [populus](https://github.com/ethereum/populus).
 
 2. Call `populus init` in your main project folder if you have not done already.
 
@@ -18,9 +19,9 @@ This is the git repository for the project hosted on
 **project directory** and not the test directory
 
 
-## SoulTokens Website
+### SoulTokens Website
 
-1. Install npm (js package manager) `https://www.npmjs.com/`
+1. Install npm (js package manager) [https://www.npmjs.com/](https://www.npmjs.com/)
 
 2. cd to **website** directory, install browserify globally: `(sudo) npm install --global browserify`
 
